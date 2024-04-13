@@ -1,33 +1,22 @@
-import { useState } from 'preact/hooks'
-import preactLogo from './assets/preact.svg'
-import viteLogo from '/vite.svg'
-import './app.css'
-
-export function App() {
-  const [count, setCount] = useState(0)
-
+import AddExpenseButton from "./components/AddExpenseButton";
+import Item from "./components/Item";
+import Navbar from "./components/Navbar";
+import data from "./mock/data";
+const App = () => {
+  const expenses = [data.expense1, data.expense2, data.expense3];
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://preactjs.com" target="_blank">
-          <img src={preactLogo} class="logo preact" alt="Preact logo" />
-        </a>
+    <div className="bg-stone-100 flex flex-col h-screen w-screen">
+      <Navbar />
+      <div className="flex flex-col flex-auto">
+        {expenses.map((ex) => (
+          <Item expense={ex} currentUser={data.user2} />
+        ))}
       </div>
-      <h1>Vite + Preact</h1>
-      <div class="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/app.tsx</code> and save to test HMR
-        </p>
+      <div className="py-6 flex justify-center">
+        <AddExpenseButton />
       </div>
-      <p class="read-the-docs">
-        Click on the Vite and Preact logos to learn more
-      </p>
-    </>
-  )
-}
+    </div>
+  );
+};
+
+export default App;
