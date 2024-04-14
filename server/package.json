@@ -6,6 +6,7 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
+    "@elysiajs/cors": "^1.0.2",
     "@prisma/client": "5.12.1",
     "axios": "^1.6.8",
     "dotenv": "^16.4.5",

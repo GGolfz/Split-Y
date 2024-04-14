@@ -4,11 +4,11 @@ import { sendMessage } from "../client/LineApiClient";
 
 const LINE_LIFF_URL = process.env.LINE_LIFF_URL
 export const lineApiHandler = async (
-  request: LineMessageEvent,
-  prismaClient: PrismaClient
+  prismaClient: PrismaClient,
+  request: LineMessageEvent
 ) => {
   try {
-    request.events.map((event) => eventHandler(event, prismaClient));
+    request.events.map((event) => eventHandler(prismaClient, event));
   } catch (ex) {
     return {
       isSuccess: false,
@@ -17,7 +17,7 @@ export const lineApiHandler = async (
   }
 };
 
-const eventHandler = async (event: Event, prismaClient: PrismaClient) => {
+const eventHandler = async (prismaClient: PrismaClient, event: Event, ) => {
   if (event.message.type === "text" && event.message.text.startsWith("!")) {
     const command = event.message.text.split("!")[1];
     switch (command) {
