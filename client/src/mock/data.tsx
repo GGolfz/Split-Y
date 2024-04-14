@@ -16,6 +16,7 @@ const user3: User = {
 const expense1: Expense = {
   name: "Expense 1",
   amount: 2000.0,
+  dateTime: "13/04/2023 12:00",
   payer: user1,
   debtors: [
     {
@@ -31,6 +32,7 @@ const expense1: Expense = {
 const expense2: Expense = {
   name: "Expense 2",
   amount: 200.0,
+  dateTime: "13/04/2023 11:00",
   payer: user1,
   debtors: [
     {
@@ -46,6 +48,7 @@ const expense2: Expense = {
 const expense3: Expense = {
   name: "Expense 3",
   amount: 500.0,
+  dateTime: "13/04/2023 10:00",
   payer: user2,
   debtors: [
     {
