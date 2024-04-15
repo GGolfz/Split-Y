@@ -1,13 +1,15 @@
 import { useEffect, useState } from "preact/hooks";
 import Navbar from "./components/Navbar";
 import liff from "@line/liff";
-import CommonButton from "./components/CommonButton";
 import ErrorPage from "./page/ErrorPage";
 import { ApiService } from "./service/ApiService";
 import { LineProfile } from "./model/LineProfile";
 import NotInGroupPage from "./page/NotInGroupPage";
 import ExpensePage from "./page/ExpensePage";
 import NavbarWithAction from "./components/NavbarWithAction";
+import CommonModal from "./components/CommonModal";
+import MemberPage from "./page/MemberPage";
+import SummaryPage from "./page/SummaryPage";
 const App = () => {
   const [currentUser, setCurrentUser] = useState<LineProfile | null>(null);
   const [isJoin, setIsJoin] = useState<boolean>(false);
@@ -74,11 +76,33 @@ const App = () => {
         />
       );
     return (
-      <ExpensePage
-        groupId={groupId}
-        accessToken={accessToken}
-        currentUser={currentUser}
-      />
+      <>
+        <ExpensePage
+          groupId={groupId}
+          accessToken={accessToken}
+          currentUser={currentUser}
+        />
+        {isShowMemberModal && (
+          <CommonModal onClose={() => setIsShowMemberModal(false)}>
+            <MemberPage groupId={groupId} accessToken={accessToken} />
+          </CommonModal>
+        )}
+        {isShowSummaryModal && (
+          <CommonModal onClose={() => setIsShowSummaryModal(false)}>
+            <SummaryPage groupId={groupId} accessToken={accessToken} />
+          </CommonModal>
+        )}
+        {isShowCreateExpenseModal && (
+          <CommonModal onClose={() => setIsShowCreateExpenseModal(false)}>
+            <>test</>
+          </CommonModal>
+        )}
+        {isShowExpenseModal && (
+          <CommonModal onClose={() => setIsShowExpenseModal(false)}>
+            <>test</>
+          </CommonModal>
+        )}
+      </>
     );
   };
   const renderNavbar = () => {
@@ -100,12 +124,17 @@ const App = () => {
     );
   };
   const onDisplayMember = () => {
-    alert("member");
+    setIsShowMemberModal(true);
   };
 
   const onDisplaySummary = () => {
-    alert("summary");
+    setIsShowSummaryModal(true);
   };
+  const [isShowMemberModal, setIsShowMemberModal] = useState(false);
+  const [isShowSummaryModal, setIsShowSummaryModal] = useState(false);
+  const [isShowCreateExpenseModal, setIsShowCreateExpenseModal] =
+    useState(false);
+  const [isShowExpenseModal, setIsShowExpenseModal] = useState(false);
   return (
     <div className="bg-stone-100 flex flex-col h-screen w-screen">
       {renderNavbar()}

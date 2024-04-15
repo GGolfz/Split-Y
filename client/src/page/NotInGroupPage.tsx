@@ -1,6 +1,5 @@
 import { useState } from "preact/hooks";
 import CommonButton from "../components/CommonButton";
-import axios from "axios";
 import { ApiService } from "../service/ApiService";
 
 interface NotInGroupPageProp extends PageProp {

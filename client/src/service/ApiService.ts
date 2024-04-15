@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import GroupResponse from "../model/GroupResponse";
 import { ApiResponse, BaseResponse } from "../model/BaseResponse";
 import { ExpenseResponse } from "../model/ExpenseResponse";
+import { SummaryResponse } from "../model/SummaryResponse";
 
 export const ApiService = {
   BASE_URL: "http://localhost:3000/api/group",
@@ -43,4 +44,14 @@ export const ApiService = {
     );
     return response.data;
   },
+  getSummary: async (
+    groupId: string,
+    accessToken: string
+  ): Promise<ApiResponse<SummaryResponse>> => {
+    const response = await axios.get<ApiResponse<SummaryResponse>>(
+      `${ApiService.BASE_URL}/${groupId}/expense/summary`,
+      ApiService.getHeader(accessToken)
+    );
+    return response.data;
+  }
 };

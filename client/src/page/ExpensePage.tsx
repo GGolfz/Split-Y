@@ -31,7 +31,9 @@ const ExpensePage = ({
     <>
       <div className="flex flex-col flex-auto">
         {expenses.length === 0 ? (
-          <>No expense in the group yet</>
+          <div className="flex flex-col flex-auto text-center justify-center">
+            No expense in the group yet
+          </div>
         ) : (
           <>
             {expenses.map((expense) => (
