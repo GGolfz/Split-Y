@@ -1,6 +1,6 @@
 export interface LineProfile {
   userId: string;
-  displayName: string;
-  statusMessage: string;
-  pictureUrl: string;
+  displayName?: string;
+  statusMessage?: string;
+  pictureUrl?: string;
 }

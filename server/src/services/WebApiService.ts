@@ -1,10 +1,18 @@
 import { Group, PrismaClient } from "@prisma/client";
 import { LineApiService } from "../plugin/LineApiPlugin";
-import GroupResponse from "../model/Group";
+import GroupResponse from "../model/GroupResponse";
 import { ApiResponse, BaseResponse } from "../model/BaseResponse";
 import { withExceptionWrapper } from "../utils/exceptionWrapper";
 import { LineProfile } from "../model/LineProfile";
 import { ExpenseRequest } from "../model/ExpenseRequest";
+import { Debtor, Expense, ExpenseResponse } from "../model/ExpenseResponse";
+import { calculateAmountPerPerson } from "../utils/calculate";
+import { ExpenseMapper } from "../mapper/ExpenseMapper";
+import { SummaryResponse } from "../model/SummaryResponse";
+import {
+  getSimplifyTransactions,
+  getTotalTransactions,
+} from "../utils/summary";
 
 abstract class WebApiService {
   private static async getGroupFromDB(
@@ -109,7 +117,7 @@ abstract class WebApiService {
       return {
         isSuccess: true,
       };
-    }, "failed to create expense");
+    }, "Failed to create expense");
   }
   static async updateExpense(
     prismaClient: PrismaClient,
@@ -139,7 +147,7 @@ abstract class WebApiService {
       return {
         isSuccess: true,
       };
-    }, "failed to update expense");
+    }, "Failed to update expense");
   }
   static async deleteExpense(
     prismaClient: PrismaClient,
@@ -164,7 +172,117 @@ abstract class WebApiService {
       return {
         isSuccess: true,
       };
-    }, "failed to delete expense");
+    }, "Failed to delete expense");
+  }
+  static async getExpenses(
+    prismaClient: PrismaClient,
+    lineApiService: LineApiService,
+    accessToken: string,
+    groupId: string
+  ): Promise<ApiResponse<ExpenseResponse>> {
+    return withExceptionWrapper(async () => {
+      const userProfile = await lineApiService.getUserProfile(accessToken);
+      const group = await WebApiService.isUserInGroup(
+        prismaClient,
+        userProfile,
+        groupId
+      );
+      const expenses = await prismaClient.expense.findMany({
+        where: {
+          isActive: true,
+        },
+      });
+      const memberProfilesMap = new Map<string, LineProfile>(
+        (
+          await lineApiService.getGroupMembersProfile(
+            group.members,
+            group.lineGroupId
+          )
+        ).map((profile) => [profile.userId, profile])
+      );
+      const modifiedExpense: Array<Expense> = expenses.map((expense) =>
+        ExpenseMapper.fromPrismaModel(expense, memberProfilesMap)
+      );
+      return {
+        isSuccess: true,
+        data: {
+          expenses: modifiedExpense,
+        },
+      };
+    }, "Failed to get expenses");
+  }
+  static async getExpenseById(
+    prismaClient: PrismaClient,
+    lineApiService: LineApiService,
+    accessToken: string,
+    groupId: string,
+    expenseId: string
+  ): Promise<ApiResponse<Expense>> {
+    return withExceptionWrapper(async () => {
+      const userProfile = await lineApiService.getUserProfile(accessToken);
+      const group = await WebApiService.isUserInGroup(
+        prismaClient,
+        userProfile,
+        groupId
+      );
+      const expense = await prismaClient.expense.findUnique({
+        where: {
+          id: expenseId,
+          isActive: true,
+        },
+      });
+      if (expense === null) throw new Error("Expense is not exist");
+      const memberProfilesMap = new Map<string, LineProfile>(
+        (
+          await lineApiService.getGroupMembersProfile(
+            group.members,
+            group.lineGroupId
+          )
+        ).map((profile) => [profile.userId, profile])
+      );
+      return {
+        isSuccess: true,
+        data: ExpenseMapper.fromPrismaModel(expense, memberProfilesMap),
+      };
+    }, "Failed to get expense by id");
+  }
+  static async summaryExpenses(
+    prismaClient: PrismaClient,
+    lineApiService: LineApiService,
+    accessToken: string,
+    groupId: string
+  ): Promise<ApiResponse<SummaryResponse>> {
+    return withExceptionWrapper(async () => {
+      const userProfile = await lineApiService.getUserProfile(accessToken);
+      const group = await WebApiService.isUserInGroup(
+        prismaClient,
+        userProfile,
+        groupId
+      );
+      const expenses = await prismaClient.expense.findMany({
+        where: {
+          isActive: true,
+        },
+      });
+      const memberProfilesMap = new Map<string, LineProfile>(
+        (
+          await lineApiService.getGroupMembersProfile(
+            group.members,
+            group.lineGroupId
+          )
+        ).map((profile) => [profile.userId, profile])
+      );
+      const modifiedExpense: Array<Expense> = expenses.map((expense) =>
+        ExpenseMapper.fromPrismaModel(expense, memberProfilesMap)
+      );
+      return {
+        isSuccess: true,
+        data: {
+          total: getTotalTransactions(modifiedExpense, memberProfilesMap),
+          simplify: getSimplifyTransactions(modifiedExpense, memberProfilesMap),
+        },
+      };
+    }, "Failed to summary expense");
   }
 }
 

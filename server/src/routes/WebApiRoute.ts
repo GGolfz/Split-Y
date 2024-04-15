@@ -63,6 +63,24 @@ const WebApiRoute = new Elysia()
           )
           .group("/expense", (expenseRoute) =>
             expenseRoute
+              .get(
+                "/",
+                ({
+                  prismaClient,
+                  lineApiService,
+                  accessToken,
+                  params: { groupId },
+                }) =>
+                  WebApiService.getExpenses(
+                    prismaClient,
+                    lineApiService,
+                    accessToken,
+                    groupId
+                  ),
+                {
+                  params: GroupIdParamType,
+                }
+              )
               .post(
                 "/create",
                 ({
@@ -84,8 +102,42 @@ const WebApiRoute = new Elysia()
                   body: ExpenseRequestType,
                 }
               )
+              .get("/summary", ({
+                prismaClient,
+                lineApiService,
+                accessToken,
+                params: { groupId },
+              }) =>
+                WebApiService.summaryExpenses(
+                  prismaClient,
+                  lineApiService,
+                  accessToken,
+                  groupId
+                ),
+              {
+                params: GroupIdParamType,
+              })
               .group("/:expenseId", (expenseWithIdRoute) =>
                 expenseWithIdRoute
+                  .get(
+                    "/",
+                    ({
+                      prismaClient,
+                      lineApiService,
+                      accessToken,
+                      params: { groupId, expenseId },
+                    }) =>
+                      WebApiService.getExpenseById(
+                        prismaClient,
+                        lineApiService,
+                        accessToken,
+                        groupId,
+                        expenseId
+                      ),
+                    {
+                      params: GroupIdWithExpenseIdParamType,
+                    }
+                  )
                   .post(
                     "/update",
                     ({
