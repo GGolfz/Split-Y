@@ -34,6 +34,9 @@ const eventHandler = async (prismaClient: PrismaClient, event: Event, ) => {
           },
           event.replyToken
         );
+        return {
+          isSuccess: true
+        }
         break;
       case "list":
         const groupList = await prismaClient.group.findMany({
@@ -54,7 +57,7 @@ const eventHandler = async (prismaClient: PrismaClient, event: Event, ) => {
           },
           event.replyToken
         );
-        console.log(groupList);
+        break;
     }
   }
 };
