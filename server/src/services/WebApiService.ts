@@ -189,6 +189,7 @@ abstract class WebApiService {
       );
       const expenses = await prismaClient.expense.findMany({
         where: {
+          groupId: groupId,
           isActive: true,
         },
       });
@@ -227,6 +228,7 @@ abstract class WebApiService {
       );
       const expense = await prismaClient.expense.findUnique({
         where: {
+          groupId: groupId,
           id: expenseId,
           isActive: true,
         },
@@ -261,6 +263,7 @@ abstract class WebApiService {
       );
       const expenses = await prismaClient.expense.findMany({
         where: {
+          groupId: groupId,
           isActive: true,
         },
       });

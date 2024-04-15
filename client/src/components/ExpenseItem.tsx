@@ -1,19 +1,21 @@
 import BillIcon from "../icons/BillIcon.tsx";
+import { Expense } from "../model/ExpenseResponse.ts";
+import { LineProfile } from "../model/LineProfile.ts";
 import { formatAmount } from "../utils/format.ts";
 interface Props {
   expense: Expense;
-  currentUser: User;
+  currentUser: LineProfile;
 }
-const Item = (props: Props) => {
-  const isPaidByCurrentUser = props.expense.payer.id === props.currentUser.id;
+const ExpenseItem = (props: Props) => {
+  const isPaidByCurrentUser = props.expense.payer.userId === props.currentUser.userId;
   const currentUserDebt = props.expense.debtors.find(
-    (debtor) => debtor.id === props.currentUser.id
+    (debtor) => debtor.profile.userId === props.currentUser.userId
   );
   const renderAmount = () => {
     if (!!currentUserDebt) {
       return (
         <>
-          {isPaidByCurrentUser ? "You" : props.expense.payer.name} paid{" "}
+          {isPaidByCurrentUser ? "You" : props.expense.payer.displayName} paid{" "}
           {formatAmount(props.expense.amount)}
         </>
       );
@@ -58,4 +60,4 @@ const Item = (props: Props) => {
   );
 };
 
-export default Item;
+export default ExpenseItem;

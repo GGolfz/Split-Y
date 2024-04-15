@@ -1,101 +1,114 @@
 import { useEffect, useState } from "preact/hooks";
-import Item from "./components/Item";
 import Navbar from "./components/Navbar";
-import data from "./mock/data";
 import liff from "@line/liff";
-import axios from "axios";
 import CommonButton from "./components/CommonButton";
+import ErrorPage from "./page/ErrorPage";
+import { ApiService } from "./service/ApiService";
+import { LineProfile } from "./model/LineProfile";
+import NotInGroupPage from "./page/NotInGroupPage";
+import ExpensePage from "./page/ExpensePage";
+import NavbarWithAction from "./components/NavbarWithAction";
 const App = () => {
-  const expenses = [data.expense1, data.expense2, data.expense3];
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<LineProfile | null>(null);
   const [isJoin, setIsJoin] = useState<boolean>(false);
-  const [isJoinButtonLoading, setIsJoinButtonLoading] =
-    useState<boolean>(false);
-  const [groupId, setGroupId] = useState<string>(
-    window.location.pathname.split("/")[1]
+  const [isError, setIsError] = useState<boolean>(false);
+  const groupId = window.location.pathname.split("/")[1];
+  const [isGroupIdValid, setIsGroupIdValid] = useState(
+    groupId && groupId.length > 0
   );
-  const [members, setMembers] = useState([]);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const initializeLiff = async () => {
     await liff.init({
       liffId: "2004547506-w5WkPoXz",
     });
     if (liff.isLoggedIn()) {
+      const liffAccessToken = liff.getAccessToken();
       const profile = await liff.getProfile();
       setCurrentUser({
-        id: profile.userId,
-        name: profile.displayName,
-      } as User);
-      const response = await axios.get(
-        `http://localhost:3000/api/group/${groupId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${liff.getAccessToken()}`,
-          },
-        }
-      );
-      if (!!response.data.group) {
-        setIsJoin(true);
-        setMembers(response.data.group.members);
-      } else {
-        setIsJoin(false);
+        userId: profile.userId,
+        displayName: profile.displayName,
+        pictureUrl: profile.pictureUrl,
+        statusMessage: profile.statusMessage,
+      });
+      if (liffAccessToken) {
+        setAccessToken(liffAccessToken);
       }
     } else {
       liff.login();
     }
   };
+  const getGroup = async () => {
+    if (accessToken !== null) {
+      try {
+        const response = await ApiService.getGroup(groupId, accessToken);
+        setIsJoin(response.isSuccess);
+        if (response.error && response.error !== "User is not in the group") {
+          setIsGroupIdValid(false);
+        }
+      } catch (exception) {
+        console.error(exception);
+        setIsError(true);
+      }
+    }
+  };
   useEffect(() => {
-    initializeLiff();
+    if (isGroupIdValid) {
+      initializeLiff();
+    }
   }, []);
-
+  useEffect(() => {
+    getGroup();
+  }, [accessToken]);
   const renderContent = () => {
+    if (isError) return <ErrorPage />;
+    if (!isGroupIdValid) return <ErrorPage />;
     if (currentUser === null) return <></>;
+    if (accessToken === null) return <ErrorPage />;
     if (!isJoin)
       return (
-        <>
-          <div className="flex flex-col flex-auto text-center justify-center">
-            <div>You're not joining this group yet.</div>
-            <div className="py-6 flex justify-center">
-              <CommonButton
-                text="Join a group"
-                onClick={async () => {
-                  if (isJoinButtonLoading) return;
-                  setIsJoinButtonLoading(true);
-                  const response = await axios.post(
-                    `http://localhost:3000/api/group/${groupId}/join`,
-                    null,
-                    {
-                      headers: {
-                        Authorization: `Bearer ${liff.getAccessToken()}`,
-                      },
-                    }
-                  );
-                  if (response.data.success) {
-                    setIsJoin(true);
-                    setIsJoinButtonLoading(false);
-                    setMembers(response.data.group.members);
-                  }
-                }}
-              />
-            </div>
-          </div>
-        </>
+        <NotInGroupPage
+          groupId={groupId}
+          accessToken={accessToken}
+          onJoin={() => setIsJoin(true)}
+          onError={() => setIsError(true)}
+        />
       );
     return (
-      <>
-        <div className="flex flex-col flex-auto">
-          {expenses.map((ex) => (
-            <Item expense={ex} currentUser={data.user2} />
-          ))}
-        </div>
-        <div className="py-6 flex justify-center">
-          <CommonButton text="Add an expense" onClick={() => {}} />
-        </div>
-      </>
+      <ExpensePage
+        groupId={groupId}
+        accessToken={accessToken}
+        currentUser={currentUser}
+      />
     );
+  };
+  const renderNavbar = () => {
+    if (
+      isError ||
+      !isGroupIdValid ||
+      currentUser === null ||
+      accessToken === null ||
+      !isJoin
+    )
+      return <Navbar />;
+    return (
+      <NavbarWithAction
+        groupId={groupId}
+        accessToken={accessToken}
+        onDisplayMember={onDisplayMember}
+        onDisplaySummary={onDisplaySummary}
+      />
+    );
+  };
+  const onDisplayMember = () => {
+    alert("member");
+  };
+
+  const onDisplaySummary = () => {
+    alert("summary");
   };
   return (
     <div className="bg-stone-100 flex flex-col h-screen w-screen">
-      <Navbar />
+      {renderNavbar()}
       {renderContent()}
     </div>
   );
