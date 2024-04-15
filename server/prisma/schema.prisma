@@ -16,13 +16,14 @@ datasource db {
 model Expense {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  amount    String
+  amount    Float
   createdAt DateTime  @default(now())
   createdBy String
   updatedAt DateTime?
   updatedBy String?
   payerId   String
   debtorIds String[]
+  isActive  Boolean   @default(true)
   groupId   String    @db.ObjectId
   group     Group     @relation(fields: [groupId], references: [groupId])
 }

@@ -7,9 +7,6 @@ const BASE_URL = "https://api.line.me/v2";
 const CHANNEL_ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
 
 class LineApiService {
-  constructor() {
-    console.log("initiate line api service");
-  }
   async sendMessage(message: LineMessage, replyToken: string): Promise<void> {
     try {
       await axios.post(
@@ -61,6 +58,9 @@ class LineApiService {
       throw ex;
     }
   }
+  async getGroupMembersProfile(userIds: Array<string>, groupId: string): Promise<Array<LineProfile>> {
+    return Promise.all(userIds.map((userId) => this.getGroupMemberProfile(userId, groupId)))
+  }
 }
 
 const LineApiPlugin = new Elysia().decorate(
@@ -70,6 +70,4 @@ const LineApiPlugin = new Elysia().decorate(
 
 export default LineApiPlugin;
 
-export {
-  LineApiService
-}
+export { LineApiService };

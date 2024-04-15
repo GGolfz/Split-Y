@@ -4,5 +4,7 @@ interface BaseResponse {
 }
 
 interface ApiResponse<T> extends BaseResponse {
-  data: T;
+  data?: T;
 }
+
+export { BaseResponse, ApiResponse };

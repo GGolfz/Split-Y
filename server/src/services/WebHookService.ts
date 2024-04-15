@@ -1,6 +1,7 @@
 import { LineMessageEvent, Event } from "../model/WebhookEvent";
 import { PrismaClient } from "@prisma/client";
 import { LineApiService } from "../plugin/LineApiPlugin";
+import { BaseResponse } from "../model/BaseResponse";
 abstract class WebHookService {
   static async handleLineWebHook(
     prismaClient: PrismaClient,
