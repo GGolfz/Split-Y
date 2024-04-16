@@ -11,6 +11,8 @@ import CommonModal from "./components/CommonModal";
 import MemberPage from "./page/MemberPage";
 import SummaryPage from "./page/SummaryPage";
 import CreateExpensePage from "./page/CreateExpensePage";
+import UpdateExpensePage from "./page/UpdateExpensePage";
+import { Expense } from "./model/ExpenseResponse";
 const App = () => {
   const [currentUser, setCurrentUser] = useState<LineProfile | null>(null);
   const [isJoin, setIsJoin] = useState<boolean>(false);
@@ -22,6 +24,24 @@ const App = () => {
     groupId && groupId.length > 0
   );
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [selectedExpense, setSelectedExpense] = useState<string | null>(null);
+
+  const [expenses, setExpenses] = useState<Array<Expense>>([]);
+  const getExpenses = async () => {
+    if (accessToken) {
+      try {
+        const response = await ApiService.getExpenses(groupId, accessToken);
+        if (response.isSuccess && response.data) {
+          setExpenses(response.data.expenses);
+        }
+      } catch (exception) {
+        console.error(exception);
+      }
+    }
+  };
+  useEffect(() => {
+    getExpenses();
+  }, []);
   const initializeLiff = async () => {
     await liff.init({
       liffId: "2004547506-w5WkPoXz",
@@ -63,6 +83,7 @@ const App = () => {
   }, []);
   useEffect(() => {
     getGroup();
+    getExpenses();
   }, [accessToken]);
   const renderContent = () => {
     if (isError) return <ErrorPage />;
@@ -78,6 +99,7 @@ const App = () => {
           onError={() => setIsError(true)}
         />
       );
+    const expenseData = expenses.find((e) => e.id === selectedExpense);
     return (
       <>
         <ExpensePage
@@ -85,6 +107,11 @@ const App = () => {
           accessToken={accessToken}
           currentUser={currentUser}
           onCreateExpense={() => setIsShowCreateExpenseModal(true)}
+          onUpdateExpense={(expenseId) => {
+            setIsShowExpenseModal(true);
+            setSelectedExpense(expenseId);
+          }}
+          expenses={expenses}
         />
         {isShowMemberModal && (
           <CommonModal onClose={() => setIsShowMemberModal(false)}>
@@ -103,13 +130,28 @@ const App = () => {
               accessToken={accessToken}
               onClose={() => {
                 setIsShowCreateExpenseModal(false);
+                getExpenses();
               }}
             />
           </CommonModal>
         )}
-        {isShowExpenseModal && (
-          <CommonModal onClose={() => setIsShowExpenseModal(false)}>
-            <>test</>
+        {isShowExpenseModal && selectedExpense !== null && expenseData && (
+          <CommonModal
+            onClose={() => {
+              setIsShowExpenseModal(false);
+              setSelectedExpense(null);
+            }}
+          >
+            <UpdateExpensePage
+              groupId={groupId}
+              accessToken={accessToken}
+              onClose={() => {
+                setIsShowExpenseModal(false);
+                setSelectedExpense(null);
+                getExpenses();
+              }}
+              expenseData={expenseData}
+            />
           </CommonModal>
         )}
       </>

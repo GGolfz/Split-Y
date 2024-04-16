@@ -5,6 +5,7 @@ import { formatAmount } from "../utils/format.ts";
 interface Props {
   expense: Expense;
   currentUser: LineProfile;
+  onClick: () => void;
 }
 const ExpenseItem = (props: Props) => {
   const isPaidByCurrentUser = props.expense.payer.userId === props.currentUser.userId;
@@ -45,7 +46,7 @@ const ExpenseItem = (props: Props) => {
     return <>not involved </>;
   };
   return (
-    <div className="flex space-between gap-2 shadow-md mx-6 my-2 p-4 rounded cursor-pointer">
+    <div className="flex space-between gap-2 shadow-md mx-6 my-2 p-4 rounded cursor-pointer" onClick={props.onClick}>
       <div className="bg-neutral-800 p-2">
         <BillIcon />
       </div>
