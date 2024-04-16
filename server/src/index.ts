@@ -10,7 +10,6 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3000
 const app = new Elysia()
-  .use(staticPlugin())
   .group("/api", (app) =>
     app.use(HealthCheckRoute).use(WebHookRoute).use(WebApiRoute)
   )
@@ -26,6 +25,11 @@ const app = new Elysia()
     },
   })
   .use(cors())
+  .use(staticPlugin(
+    {
+      prefix: "/"
+    }
+  ))
   .listen(PORT);
 
 console.log(
