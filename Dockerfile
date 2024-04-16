@@ -19,8 +19,7 @@ RUN bun prisma-generate
 ###################
 # FRONTEND BUILD
 ###################
-FROM node:18-alpine As frontend-build 
-ENV VITE_LIFF_ID ${_LIFF_ID}
+FROM node:18-alpine As frontend-build
 RUN npm i -g pnpm@7
 WORKDIR /usr/src/app
 COPY --chown=node:node ./client/pnpm-lock.yaml ./

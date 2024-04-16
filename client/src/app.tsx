@@ -25,7 +25,7 @@ const App = () => {
   const isGroupIdValid = group.groupId && group.groupId.length > 0;
   const initializeLiff = async () => {
     await liff.init({
-      liffId: import.meta.env.VITE_LIFF_ID,
+      liffId: "2004547506-w5WkPoXz",
     });
     if (liff.isLoggedIn()) {
       const liffAccessToken = liff.getAccessToken();
