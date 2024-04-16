@@ -1,14 +1,20 @@
 import { useEffect, useState } from "preact/hooks";
 import { ApiService } from "../service/ApiService";
 import { LineProfile } from "../model/LineProfile";
-import MemberBox from "../components/MemberBox";
 import { ExpenseRequest } from "../model/ExpenseRequest";
 import CommonButton from "../components/CommonButton";
 import TextField, { TextFieldType } from "../components/TextField";
 import SingleSelect from "../components/SingleSelect";
 import MultipleSelect from "../components/MultipleSelect";
 
-const CreateExpensePage = ({ groupId, accessToken }: PageProp) => {
+interface CreateExpensePageProps extends PageProp {
+  onClose: () => void;
+}
+const CreateExpensePage = ({
+  groupId,
+  accessToken,
+  onClose,
+}: CreateExpensePageProps) => {
   const [members, setMembers] = useState<Array<LineProfile>>([]);
   const [formData, setFormData] = useState<{
     name: string;
@@ -30,6 +36,33 @@ const CreateExpensePage = ({ groupId, accessToken }: PageProp) => {
     } catch (exception) {
       console.error(exception);
     }
+  };
+  const handleCreateExpense = async () => {
+    if (
+      formData.name.length !== 0 &&
+      !!parseFloat(formData.amount) &&
+      formData.payerId.length !== 0 &&
+      formData.debtorIds.length !== 0
+    ) {
+      const request: ExpenseRequest = {
+        name: formData.name,
+        amount: parseFloat(formData.amount),
+        payerId: formData.payerId,
+        debtorIds: formData.debtorIds,
+      };
+      const response = await ApiService.createExpense(
+        groupId,
+        accessToken,
+        request
+      );
+      if (response.isSuccess) {
+        onClose();
+        return;
+      }
+      alert("Failed to create expense, please try again");
+      return;
+    }
+    alert("Form is not valid :(");
   };
 
   useEffect(() => {
@@ -79,7 +112,7 @@ const CreateExpensePage = ({ groupId, accessToken }: PageProp) => {
         }}
         valueList={members}
       />
-      <CommonButton text="Create an expense" onClick={() => {}} />
+      <CommonButton text="Create an expense" onClick={handleCreateExpense} />
     </div>
   );
 };

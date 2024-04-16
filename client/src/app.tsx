@@ -15,7 +15,9 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState<LineProfile | null>(null);
   const [isJoin, setIsJoin] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const groupId = (new URLSearchParams(window.location.search))?.get('liff.state') ?? window.location.pathname.split("/")[1];
+  const groupId =
+    new URLSearchParams(window.location.search)?.get("liff.state") ??
+    window.location.pathname.split("/")[1];
   const [isGroupIdValid, setIsGroupIdValid] = useState(
     groupId && groupId.length > 0
   );
@@ -24,7 +26,6 @@ const App = () => {
     await liff.init({
       liffId: "2004547506-w5WkPoXz",
     });
-    console.log(liff.isLoggedIn())
     if (liff.isLoggedIn()) {
       const liffAccessToken = liff.getAccessToken();
       const profile = await liff.getProfile();
@@ -97,7 +98,13 @@ const App = () => {
         )}
         {isShowCreateExpenseModal && (
           <CommonModal onClose={() => setIsShowCreateExpenseModal(false)}>
-            <CreateExpensePage groupId={groupId} accessToken={accessToken}/>
+            <CreateExpensePage
+              groupId={groupId}
+              accessToken={accessToken}
+              onClose={() => {
+                setIsShowCreateExpenseModal(false);
+              }}
+            />
           </CommonModal>
         )}
         {isShowExpenseModal && (
