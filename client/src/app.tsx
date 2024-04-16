@@ -34,7 +34,7 @@ const App = () => {
       setAccessToken(liffAccessToken);
     } else {
       liff.login({
-        redirectUri: `${window.location.hostname}/${group.groupId}`
+        redirectUri: `https://${window.location.hostname}/${group.groupId}`
       });
     }
   };
