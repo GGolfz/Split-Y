@@ -5,9 +5,11 @@ import HealthCheckRoute from "./routes/HealthCheckRoute";
 import WebHookRoute from "./routes/WebHookRoute";
 import WebApiRoute from "./routes/WebApiRoute";
 import { GroupIdParamType } from "./model/ParamType";
+import staticPlugin from "@elysiajs/static";
 dotenv.config();
 
 const app = new Elysia()
+  .use(staticPlugin())
   .group("/api", (app) =>
     app.use(HealthCheckRoute).use(WebHookRoute).use(WebApiRoute)
   )
