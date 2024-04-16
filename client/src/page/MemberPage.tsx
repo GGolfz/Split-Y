@@ -21,11 +21,11 @@ const MemberPage = ({ groupId, accessToken }: PageProp) => {
   }, []);
   return (
     <div className="w-60 flex flex-col h-96 overflow-scroll gap-3">
-      <div className="text-center text-lg sticky top-0 bg-white ">
+      <div className="text-center text-lg sticky top-0 bg-white">
         Group Members
       </div>
       {members.map((profile) => (
-        <div className="flex h-16 items-center gap-4" key={profile.userId}>
+        <div className="flex h-12 items-center gap-4" key={profile.userId}>
           <MemberBox profile={profile} />
         </div>
       ))}

@@ -7,11 +7,13 @@ import { ApiService } from "../service/ApiService";
 
 interface ExpensePageProp extends PageProp {
   currentUser: LineProfile;
+  onCreateExpense: () => void;
 }
 const ExpensePage = ({
   groupId,
   accessToken,
   currentUser,
+  onCreateExpense,
 }: ExpensePageProp) => {
   const [expenses, setExpenses] = useState<Array<Expense>>([]);
   const getExpenses = async () => {
@@ -43,7 +45,7 @@ const ExpensePage = ({
         )}
       </div>
       <div className="py-6 flex justify-center">
-        <CommonButton text="Add an expense" onClick={() => {}} />
+        <CommonButton text="Add an expense" onClick={onCreateExpense} />
       </div>
     </>
   );

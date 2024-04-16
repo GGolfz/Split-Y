@@ -3,6 +3,7 @@ import GroupResponse from "../model/GroupResponse";
 import { ApiResponse, BaseResponse } from "../model/BaseResponse";
 import { ExpenseResponse } from "../model/ExpenseResponse";
 import { SummaryResponse } from "../model/SummaryResponse";
+import { ExpenseRequest } from "../model/ExpenseRequest";
 
 export const ApiService = {
   BASE_URL: "http://localhost:3000/api/group",
@@ -53,5 +54,17 @@ export const ApiService = {
       ApiService.getHeader(accessToken)
     );
     return response.data;
-  }
+  },
+  createExpense: async (
+    groupId: string,
+    accessToken: string,
+    request: ExpenseRequest
+  ): Promise<BaseResponse> => {
+    const response = await axios.post<BaseResponse>(
+      `${ApiService.BASE_URL}/${groupId}/expense/create`,
+      request,
+      ApiService.getHeader(accessToken)
+    );
+    return response.data;
+  },
 };

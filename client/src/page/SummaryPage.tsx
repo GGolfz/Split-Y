@@ -1,9 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
-import { LineProfile } from "../model/LineProfile";
 import { ApiService } from "../service/ApiService";
 import { Transaction } from "../model/SummaryResponse";
 import { formatAmount } from "../utils/format";
-import MemberBox from "../components/MemberBox";
+import MemberBox, { Size } from "../components/MemberBox";
 
 enum Tab {
   Total,
@@ -55,10 +54,10 @@ const SummaryPage = ({ groupId, accessToken }: PageProp) => {
         </div>
         {(tab === Tab.Simplify ? simplifyTransactions : totalTransactions).map(
           (transaction) => (
-            <div>
-              <MemberBox profile={transaction.payFrom} />
-              <div> paid {formatAmount(transaction.amount)} to </div>
-              <MemberBox profile={transaction.payTo} />
+            <div className="flex text-xs gap-2 py-2 items-center">
+              <MemberBox profile={transaction.payFrom} size={Size.Small} />
+              <div>paid {formatAmount(transaction.amount)} to </div>
+              <MemberBox profile={transaction.payTo} size={Size.Small} />
             </div>
           )
         )}
