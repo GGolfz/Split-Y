@@ -45,6 +45,18 @@ const UpdateExpensePage = ({
     !!parseFloat(formData.amount) &&
     formData.payerId.length !== 0 &&
     formData.debtorIds.length !== 0;
+  const handleDeleteExpense = async () => {
+    const response = await ApiService.deleteExpense(
+      groupId,
+      accessToken,
+      expenseData.id
+    );
+    if (response.isSuccess) {
+      onClose();
+      return;
+    }
+    alert("Failed to delete expense, please try again");
+  };
   const handleUpdateExpense = async () => {
     if (isFormValid) {
       const request: ExpenseRequest = {
@@ -63,7 +75,7 @@ const UpdateExpensePage = ({
         onClose();
         return;
       }
-      alert("Failed to create expense, please try again");
+      alert("Failed to update expense, please try again");
       return;
     }
   };
@@ -118,7 +130,7 @@ const UpdateExpensePage = ({
       <div className="flex justify-around">
         <CommonButton
           text="Delete"
-          onClick={handleUpdateExpense}
+          onClick={handleDeleteExpense}
           disable={!isFormValid}
           type={ButtonType.DANGER}
         />

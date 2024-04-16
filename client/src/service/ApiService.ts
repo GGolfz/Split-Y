@@ -80,4 +80,16 @@ export const ApiService = {
     );
     return response.data;
   },
+  deleteExpense: async (
+    groupId: string,
+    accessToken: string,
+    expenseId: string
+  ): Promise<BaseResponse> => {
+    const response = await axios.post<BaseResponse>(
+      `${ApiService.BASE_URL}/${groupId}/expense/${expenseId}/delete`,
+      null,
+      ApiService.getHeader(accessToken)
+    );
+    return response.data;
+  },
 };
