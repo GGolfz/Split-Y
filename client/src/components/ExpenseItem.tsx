@@ -12,7 +12,7 @@ const ExpenseItem = (props: Props) => {
     (debtor) => debtor.profile.userId === props.currentUser.userId
   );
   const renderAmount = () => {
-    if (!!currentUserDebt) {
+    if (!!currentUserDebt || isPaidByCurrentUser) {
       return (
         <>
           {isPaidByCurrentUser ? "You" : props.expense.payer.displayName} paid{" "}

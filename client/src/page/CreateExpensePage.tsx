@@ -37,13 +37,13 @@ const CreateExpensePage = ({
       console.error(exception);
     }
   };
+  const isFormValid =
+    formData.name.length !== 0 &&
+    !!parseFloat(formData.amount) &&
+    formData.payerId.length !== 0 &&
+    formData.debtorIds.length !== 0;
   const handleCreateExpense = async () => {
-    if (
-      formData.name.length !== 0 &&
-      !!parseFloat(formData.amount) &&
-      formData.payerId.length !== 0 &&
-      formData.debtorIds.length !== 0
-    ) {
+    if (isFormValid) {
       const request: ExpenseRequest = {
         name: formData.name,
         amount: parseFloat(formData.amount),
@@ -62,7 +62,6 @@ const CreateExpensePage = ({
       alert("Failed to create expense, please try again");
       return;
     }
-    alert("Form is not valid :(");
   };
 
   useEffect(() => {
@@ -112,7 +111,11 @@ const CreateExpensePage = ({
         }}
         valueList={members}
       />
-      <CommonButton text="Create an expense" onClick={handleCreateExpense} />
+      <CommonButton
+        text="Create an expense"
+        onClick={handleCreateExpense}
+        disable={!isFormValid}
+      />
     </div>
   );
 };
