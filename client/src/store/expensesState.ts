@@ -1,7 +1,4 @@
-import {
-  atom,
-  SetterOrUpdater,
-} from "recoil";
+import { atom, SetterOrUpdater } from "recoil";
 import { Expense } from "../model/ExpenseResponse";
 import { ApiService } from "../service/ApiService";
 import { Nullable } from "../type/Nullable";

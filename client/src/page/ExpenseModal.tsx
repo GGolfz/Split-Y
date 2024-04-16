@@ -11,6 +11,7 @@ import { groupState } from "../store/groupState";
 import { accessTokenState } from "../store/accessTokenState";
 import { PageState, pageState } from "../store/pageState";
 import { expenseState, fetchExpenses } from "../store/expensesState";
+import { webSocketState } from "../store/webSocketState";
 
 const ExpenseModal = () => {
   const [selectedExpense, setSelectedExpense] =
@@ -19,6 +20,7 @@ const ExpenseModal = () => {
   const accessToken = useRecoilValue(accessTokenState);
   const setPage = useSetRecoilState(pageState);
   const setExpenses = useSetRecoilState(expenseState);
+  const webSocket = useRecoilValue(webSocketState)
   const [formData, setFormData] = useState<{
     name: string;
     amount: string;
@@ -41,6 +43,7 @@ const ExpenseModal = () => {
     setSelectedExpense(null);
     setPage(PageState.MAIN);
     fetchExpenses(accessToken, group, setExpenses);
+    webSocket?.send('expenses')
   };
   const handleCreateExpense = async () => {
     if (isFormValid && accessToken != null) {

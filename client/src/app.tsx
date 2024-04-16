@@ -14,13 +14,14 @@ import CommonModal from "./components/CommonModal";
 import MemberPage from "./page/MemberPage";
 import SummaryPage from "./page/SummaryPage";
 import ExpenseModal from "./page/ExpenseModal";
+import { webSocketState } from "./store/webSocketState";
 const App = () => {
   const [group, setGroup] = useRecoilState(groupState);
   const setCurrentUser = useSetRecoilState(userState);
-  const setAccessToken = useSetRecoilState(accessTokenState);
+  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const setPage = useSetRecoilState(pageState);
-  const accessToken = useRecoilValue(accessTokenState);
   const setExpenses = useSetRecoilState(expenseState);
+  const setWebSocket = useSetRecoilState(webSocketState);
   const isGroupIdValid = group.groupId && group.groupId.length > 0;
   const initializeLiff = async () => {
     await liff.init({
@@ -44,8 +45,22 @@ const App = () => {
     }
   }, []);
   useEffect(() => {
-    fetchGroupState(accessToken, group, setGroup, setPage);
-    fetchExpenses(accessToken, group, setExpenses);
+    if (accessToken !== null) {
+      fetchGroupState(accessToken, group, setGroup, setPage);
+      fetchExpenses(accessToken, group, setExpenses);
+      const webSocket = new WebSocket(`ws://localhost:3000/ws/${group.groupId}`);
+      webSocket.onmessage = (event: MessageEvent) => {
+        if (event.data === "members") {
+          fetchGroupState(accessToken, group, setGroup, setPage);
+        } else if (event.data === "expenses") {
+          fetchExpenses(accessToken, group, setExpenses);
+        }
+      };
+      setWebSocket((ws) => {
+        ws?.close();
+        return webSocket;
+      });
+    }
   }, [accessToken]);
 
   const renderPage = () => {

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "preact/hooks";
 import CommonButton from "../components/CommonButton";
 import { ApiService } from "../service/ApiService";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState, useRecoilState } from "recoil";
 import { PageState, pageState } from "../store/pageState";
 import { accessTokenState } from "../store/accessTokenState";
 import { fetchGroupState, groupState } from "../store/groupState";
 const NotInGroupPage = () => {
   const setPage = useSetRecoilState(pageState);
   const accessToken = useRecoilValue(accessTokenState);
-  const group = useRecoilValue(groupState);
+  const [group, setGroup] = useRecoilState(groupState);
   const [isJoinButtonLoading, setIsJoinButtonLoading] =
     useState<boolean>(false);
   useEffect(() => {
@@ -34,7 +34,7 @@ const NotInGroupPage = () => {
                 );
                 if (response.isSuccess) {
                   setIsJoinButtonLoading(false);
-                  fetchGroupState();
+                  fetchGroupState(accessToken, group, setGroup, setPage);
                   setPage(PageState.MAIN);
                 }
               } catch (exception) {
