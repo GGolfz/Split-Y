@@ -8,6 +8,7 @@ import { GroupIdParamType } from "./model/ParamType";
 import staticPlugin from "@elysiajs/static";
 dotenv.config();
 
+const PORT = process.env.PORT || 3000
 const app = new Elysia()
   .use(staticPlugin())
   .group("/api", (app) =>
@@ -25,7 +26,7 @@ const app = new Elysia()
     },
   })
   .use(cors())
-  .listen(3000);
+  .listen(PORT);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`

@@ -40,5 +40,3 @@ COPY --from=backend-build /usr/src/app ./
 COPY --from=frontend-build /usr/src/app/dist ./public
 
 CMD ["bun", "src/index.ts"]
-
-EXPOSE 3000
