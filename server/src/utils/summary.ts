@@ -12,7 +12,7 @@ export const getTotalTransactions = (
       const isPayer = debtor.profile.userId === expense.payer.userId;
       const payFrom = debtor.profile.userId;
       const payTo = expense.payer.userId;
-      const amount = expense.amount;
+      const amount = debtor.amount;
       if (!isPayer) {
         const payToMap = debtMap.get(payFrom) ?? new Map<string, number>();
         const currentDebt = payToMap.get(payTo) ?? 0;
@@ -57,7 +57,8 @@ export const getSimplifyTransactions = (
     expense.debtors.forEach((debtor) => {
       const userId = debtor.profile.userId;
       const currentDebt = debtInvolvedMap.get(userId) ?? 0;
-      debtInvolvedMap.set(userId, currentDebt + amount);
+      const debtAmount = debtor.amount
+      debtInvolvedMap.set(userId, currentDebt + debtAmount);
     });
   });
   const resultMap: Map<string, number> = new Map();
