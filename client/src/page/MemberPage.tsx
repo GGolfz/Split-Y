@@ -20,7 +20,7 @@ const MemberPage = ({ groupId, accessToken }: PageProp) => {
     getMembers();
   }, []);
   return (
-    <div className="w-60 flex flex-col h-96 overflow-scroll gap-3">
+    <div className="w-64 flex flex-col h-96 overflow-scroll gap-3">
       <div className="text-center text-lg sticky top-0 bg-white">
         Group Members
       </div>

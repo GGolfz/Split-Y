@@ -3,12 +3,21 @@ import { ApiService } from "../service/ApiService";
 import { LineProfile } from "../model/LineProfile";
 import MemberBox from "../components/MemberBox";
 import { ExpenseRequest } from "../model/ExpenseRequest";
+import CommonButton from "../components/CommonButton";
+import TextField, { TextFieldType } from "../components/TextField";
+import SingleSelect from "../components/SingleSelect";
+import MultipleSelect from "../components/MultipleSelect";
 
 const CreateExpensePage = ({ groupId, accessToken }: PageProp) => {
   const [members, setMembers] = useState<Array<LineProfile>>([]);
-  const [formData, setFormData] = useState<ExpenseRequest>({
+  const [formData, setFormData] = useState<{
+    name: string;
+    amount: string;
+    payerId: string;
+    debtorIds: Array<string>;
+  }>({
     name: "",
-    amount: 0,
+    amount: "0",
     payerId: "",
     debtorIds: [],
   });
@@ -27,39 +36,50 @@ const CreateExpensePage = ({ groupId, accessToken }: PageProp) => {
     getMembers();
   }, []);
   return (
-    <div className="w-60 flex flex-col h-96 overflow-scroll gap-2">
+    <div className="w-64 flex flex-col max-h-screen gap-4">
       <div className="text-center text-lg sticky top-0 bg-white ">
         Create an Expense
       </div>
-      <div className="flex h-8 items-center gap-4">
-        <div>Name</div> <input type="text" className="border box-border" />
-      </div>
-      <div className="flex h-8 items-center gap-4">
-        <div>Amount</div>
-        <div>
-          <input type="number" className="border box-border" />
-        </div>
-      </div>
-      <div className="flex h-8 items-center gap-4">
-        <div>Paid by</div>
-        <div>
-          <select name="payer">
-            {members.map((profile) => (
-              <option>{profile.displayName}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="flex h-8 items-center gap-4">
-        <input type="checkbox" />
-        Select All
-      </div>
-      {members.map((profile) => (
-        <div className="flex h-16 items-center gap-4" key={profile.userId}>
-          <input type="checkbox" />
-          <MemberBox profile={profile} />
-        </div>
-      ))}
+      <TextField
+        type={TextFieldType.Text}
+        name="Name"
+        value={formData.name}
+        onChange={(name) => setFormData((formData) => ({ ...formData, name }))}
+      />
+      <TextField
+        type={TextFieldType.Number}
+        name="Amount"
+        value={formData.amount}
+        onChange={(amount) =>
+          setFormData((formData) => ({
+            ...formData,
+            amount,
+          }))
+        }
+      />
+      <SingleSelect
+        name="Paid by"
+        value={formData.payerId}
+        onChange={(payerId) => {
+          setFormData((formData) => ({
+            ...formData,
+            payerId,
+          }));
+        }}
+        valueList={members}
+      />
+      <MultipleSelect
+        name="Split equally to"
+        values={formData.debtorIds}
+        onChange={(debtorIds) => {
+          setFormData((formData) => ({
+            ...formData,
+            debtorIds,
+          }));
+        }}
+        valueList={members}
+      />
+      <CommonButton text="Create an expense" onClick={() => {}} />
     </div>
   );
 };

@@ -2,7 +2,8 @@ import { LineProfile } from "../model/LineProfile";
 
 export enum Size {
   Small,
-  Medium
+  Medium,
+  Large
 }
 interface Props {
   profile: LineProfile
@@ -12,8 +13,10 @@ const MemberBox = ({ profile, size = Size.Medium }: Props) => {
   const getSize = (size: Size) => {
     switch(size) {
       case Size.Small:
-        return 24
+        return 16
       case Size.Medium:
+        return 24
+      case Size.Large:
         return 36
       default:
         return 36
