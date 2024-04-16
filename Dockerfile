@@ -14,6 +14,7 @@ COPY ./server/src src
 COPY ./server/prisma prisma
 COPY ./server/tsconfig.json ./
 ENV NODE_ENV production
+RUN bun prisma-generate
 
 ###################
 # FRONTEND BUILD
