@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@elysiajs/cors': ^1.0.2
   '@prisma/client': 5.12.1
   axios: ^1.6.8
   bun-types: latest
@@ -9,6 +10,7 @@ specifiers:
   prisma: ^5.12.1
 
 dependencies:
+  '@elysiajs/cors': 1.0.2_elysia@1.0.13
   '@prisma/client': 5.12.1_prisma@5.12.1
   axios: 1.6.8
   dotenv: 16.4.5
@@ -19,6 +21,14 @@ devDependencies:
   bun-types: 1.1.3
 
 packages:
+
+  /@elysiajs/cors/1.0.2_elysia@1.0.13:
+    resolution: {integrity: sha512-2X+wes5M2SdSaI4lGp0YBbTK35y9TtjjjFMjmQNjMonUXxtOrAR7cA0lsSIvHQ8UTd9z+mMBn7NyBhWaKxq0jA==}
+    peerDependencies:
+      elysia: '>= 1.0.2'
+    dependencies:
+      elysia: 1.0.13
+    dev: false
 
   /@prisma/client/5.12.1_prisma@5.12.1:
     resolution: {integrity: sha512-6/JnizEdlSBxDIdiLbrBdMW5NqDxOmhXAJaNXiPpgzAPr/nLZResT6MMpbOHLo5yAbQ1Vv5UU8PTPRzb0WIxdA==}
