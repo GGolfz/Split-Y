@@ -25,7 +25,7 @@ const App = () => {
   const isGroupIdValid = group.groupId && group.groupId.length > 0;
   const initializeLiff = async () => {
     await liff.init({
-      liffId: "2004547506-w5WkPoXz",
+      liffId: import.meta.env.VITE_LIFF_ID,
     });
     if (liff.isLoggedIn()) {
       const liffAccessToken = liff.getAccessToken();
@@ -48,7 +48,10 @@ const App = () => {
     if (accessToken !== null) {
       fetchGroupState(accessToken, group, setGroup, setPage);
       fetchExpenses(accessToken, group, setExpenses);
-      const webSocket = new WebSocket(`ws://localhost:3000/ws/${group.groupId}`);
+      console.log(import.meta.env)
+      const webSocket = new WebSocket(
+        `${import.meta.env.VITE_WS_BASE_URL}/ws/${group.groupId}`
+      );
       webSocket.onmessage = (event: MessageEvent) => {
         if (event.data === "members") {
           fetchGroupState(accessToken, group, setGroup, setPage);

@@ -6,7 +6,7 @@ import { SummaryResponse } from "../model/SummaryResponse";
 import { ExpenseRequest } from "../model/ExpenseRequest";
 
 export const ApiService = {
-  BASE_URL: "http://localhost:3000/api/group",
+  BASE_URL: `${import.meta.env.VITE_API_BASE_URL}/api/group`,
   getHeader: (accessToken: string): AxiosRequestConfig => {
     return {
       headers: {
