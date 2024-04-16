@@ -1,14 +1,20 @@
+import { useRecoilValue } from "recoil";
 import { useEffect, useState } from "preact/hooks";
 import { ApiService } from "../service/ApiService";
 import { Transaction } from "../model/SummaryResponse";
 import { formatAmount } from "../utils/format";
 import MemberBox, { Size } from "../components/MemberBox";
+import { groupState } from "../store/groupState";
+import { accessTokenState } from "../store/accessTokenState";
 
 enum Tab {
   Total,
   Simplify,
 }
-const SummaryPage = ({ groupId, accessToken }: PageProp) => {
+const SummaryPage = () => {
+  const group = useRecoilValue(groupState);
+  const accessToken = useRecoilValue(accessTokenState);
+  if (accessToken === null) return <></>;
   const [totalTransactions, setTotalTransactions] = useState<
     Array<Transaction>
   >([]);
@@ -18,7 +24,7 @@ const SummaryPage = ({ groupId, accessToken }: PageProp) => {
   const [tab, setTab] = useState<Tab>(Tab.Simplify);
   const getSummary = async () => {
     try {
-      const response = await ApiService.getSummary(groupId, accessToken);
+      const response = await ApiService.getSummary(group.groupId, accessToken);
       if (response.isSuccess && response.data) {
         setTotalTransactions(response.data.total);
         setSimplifyTransactions(response.data.simplify);

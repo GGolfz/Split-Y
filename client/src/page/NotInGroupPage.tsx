@@ -1,19 +1,22 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import CommonButton from "../components/CommonButton";
 import { ApiService } from "../service/ApiService";
-
-interface NotInGroupPageProp extends PageProp {
-  onJoin: () => void;
-  onError: () => void;
-}
-const NotInGroupPage = ({
-  groupId,
-  accessToken,
-  onJoin,
-  onError,
-}: NotInGroupPageProp) => {
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { PageState, pageState } from "../store/pageState";
+import { accessTokenState } from "../store/accessTokenState";
+import { fetchGroupState, groupState } from "../store/groupState";
+const NotInGroupPage = () => {
+  const setPage = useSetRecoilState(pageState);
+  const accessToken = useRecoilValue(accessTokenState);
+  const group = useRecoilValue(groupState);
   const [isJoinButtonLoading, setIsJoinButtonLoading] =
     useState<boolean>(false);
+  useEffect(() => {
+    if (accessToken === null) {
+      setPage(PageState.ERROR);
+    }
+  }, [accessToken]);
+  if (accessToken === null) return <></>;
   return (
     <>
       <div className="flex flex-col flex-auto text-center justify-center">
@@ -26,15 +29,17 @@ const NotInGroupPage = ({
               setIsJoinButtonLoading(true);
               try {
                 const response = await ApiService.joinGroup(
-                  groupId,
+                  group.groupId,
                   accessToken
                 );
                 if (response.isSuccess) {
                   setIsJoinButtonLoading(false);
-                  onJoin();
+                  fetchGroupState();
+                  setPage(PageState.MAIN);
                 }
               } catch (exception) {
-                onError();
+                console.error(exception);
+                setPage(PageState.ERROR);
               }
             }}
           />

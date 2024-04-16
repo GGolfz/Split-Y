@@ -1,47 +1,27 @@
-import { useEffect, useState } from "preact/hooks";
+import { useEffect } from "preact/hooks";
 import Navbar from "./components/Navbar";
 import liff from "@line/liff";
 import ErrorPage from "./page/ErrorPage";
-import { ApiService } from "./service/ApiService";
-import { LineProfile } from "./model/LineProfile";
 import NotInGroupPage from "./page/NotInGroupPage";
 import ExpensePage from "./page/ExpensePage";
-import NavbarWithAction from "./components/NavbarWithAction";
+import { useSetRecoilState, useRecoilValue, useRecoilState } from "recoil";
+import { userState } from "./store/userState";
+import { accessTokenState } from "./store/accessTokenState";
+import { PageState, pageState } from "./store/pageState";
+import { fetchGroupState, groupState } from "./store/groupState";
+import { expenseState, fetchExpenses } from "./store/expensesState";
 import CommonModal from "./components/CommonModal";
 import MemberPage from "./page/MemberPage";
 import SummaryPage from "./page/SummaryPage";
-import CreateExpensePage from "./page/CreateExpensePage";
-import UpdateExpensePage from "./page/UpdateExpensePage";
-import { Expense } from "./model/ExpenseResponse";
+import ExpenseModal from "./page/ExpenseModal";
 const App = () => {
-  const [currentUser, setCurrentUser] = useState<LineProfile | null>(null);
-  const [isJoin, setIsJoin] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
-  const groupId =
-    new URLSearchParams(window.location.search)?.get("liff.state") ??
-    window.location.pathname.split("/")[1];
-  const [isGroupIdValid, setIsGroupIdValid] = useState(
-    groupId && groupId.length > 0
-  );
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [selectedExpense, setSelectedExpense] = useState<string | null>(null);
-
-  const [expenses, setExpenses] = useState<Array<Expense>>([]);
-  const getExpenses = async () => {
-    if (accessToken) {
-      try {
-        const response = await ApiService.getExpenses(groupId, accessToken);
-        if (response.isSuccess && response.data) {
-          setExpenses(response.data.expenses);
-        }
-      } catch (exception) {
-        console.error(exception);
-      }
-    }
-  };
-  useEffect(() => {
-    getExpenses();
-  }, []);
+  const [group, setGroup] = useRecoilState(groupState);
+  const setCurrentUser = useSetRecoilState(userState);
+  const setAccessToken = useSetRecoilState(accessTokenState);
+  const setPage = useSetRecoilState(pageState);
+  const accessToken = useRecoilValue(accessTokenState);
+  const setExpenses = useSetRecoilState(expenseState);
+  const isGroupIdValid = group.groupId && group.groupId.length > 0;
   const initializeLiff = async () => {
     await liff.init({
       liffId: "2004547506-w5WkPoXz",
@@ -49,148 +29,59 @@ const App = () => {
     if (liff.isLoggedIn()) {
       const liffAccessToken = liff.getAccessToken();
       const profile = await liff.getProfile();
-      setCurrentUser({
-        userId: profile.userId,
-        displayName: profile.displayName,
-        pictureUrl: profile.pictureUrl,
-        statusMessage: profile.statusMessage,
-      });
-      if (liffAccessToken) {
-        setAccessToken(liffAccessToken);
-      }
+      setCurrentUser(profile);
+      setAccessToken(liffAccessToken);
     } else {
       liff.login();
     }
   };
-  const getGroup = async () => {
-    if (accessToken !== null) {
-      try {
-        const response = await ApiService.getGroup(groupId, accessToken);
-        setIsJoin(response.isSuccess);
-        if (response.error && response.error !== "User is not in the group") {
-          setIsGroupIdValid(false);
-        }
-      } catch (exception) {
-        console.error(exception);
-        setIsError(true);
-      }
-    }
-  };
+
   useEffect(() => {
     if (isGroupIdValid) {
       initializeLiff();
+    } else {
+      setPage(PageState.ERROR);
     }
   }, []);
   useEffect(() => {
-    getGroup();
-    getExpenses();
+    fetchGroupState(accessToken, group, setGroup, setPage);
+    fetchExpenses(accessToken, group, setExpenses);
   }, [accessToken]);
-  const renderContent = () => {
-    if (isError) return <ErrorPage />;
-    if (!isGroupIdValid) return <ErrorPage />;
-    if (currentUser === null) return <></>;
-    if (accessToken === null) return <ErrorPage />;
-    if (!isJoin)
-      return (
-        <NotInGroupPage
-          groupId={groupId}
-          accessToken={accessToken}
-          onJoin={() => setIsJoin(true)}
-          onError={() => setIsError(true)}
-        />
-      );
-    const expenseData = expenses.find((e) => e.id === selectedExpense);
-    return (
-      <>
-        <ExpensePage
-          groupId={groupId}
-          accessToken={accessToken}
-          currentUser={currentUser}
-          onCreateExpense={() => setIsShowCreateExpenseModal(true)}
-          onUpdateExpense={(expenseId) => {
-            setIsShowExpenseModal(true);
-            setSelectedExpense(expenseId);
-          }}
-          expenses={expenses}
-        />
-        {isShowMemberModal && (
-          <CommonModal onClose={() => setIsShowMemberModal(false)}>
-            <MemberPage groupId={groupId} accessToken={accessToken} />
-          </CommonModal>
-        )}
-        {isShowSummaryModal && (
-          <CommonModal onClose={() => setIsShowSummaryModal(false)}>
-            <SummaryPage groupId={groupId} accessToken={accessToken} />
-          </CommonModal>
-        )}
-        {isShowCreateExpenseModal && (
-          <CommonModal onClose={() => setIsShowCreateExpenseModal(false)}>
-            <CreateExpensePage
-              groupId={groupId}
-              accessToken={accessToken}
-              onClose={() => {
-                setIsShowCreateExpenseModal(false);
-                getExpenses();
-              }}
-            />
-          </CommonModal>
-        )}
-        {isShowExpenseModal && selectedExpense !== null && expenseData && (
-          <CommonModal
-            onClose={() => {
-              setIsShowExpenseModal(false);
-              setSelectedExpense(null);
-            }}
-          >
-            <UpdateExpensePage
-              groupId={groupId}
-              accessToken={accessToken}
-              onClose={() => {
-                setIsShowExpenseModal(false);
-                setSelectedExpense(null);
-                getExpenses();
-              }}
-              expenseData={expenseData}
-            />
-          </CommonModal>
-        )}
-      </>
-    );
-  };
-  const renderNavbar = () => {
-    if (
-      isError ||
-      !isGroupIdValid ||
-      currentUser === null ||
-      accessToken === null ||
-      !isJoin
-    )
-      return <Navbar />;
-    return (
-      <NavbarWithAction
-        groupId={groupId}
-        accessToken={accessToken}
-        onDisplayMember={onDisplayMember}
-        onDisplaySummary={onDisplaySummary}
-      />
-    );
-  };
-  const onDisplayMember = () => {
-    setIsShowMemberModal(true);
-  };
 
-  const onDisplaySummary = () => {
-    setIsShowSummaryModal(true);
+  const renderPage = () => {
+    const page = useRecoilValue(pageState);
+    switch (page) {
+      case PageState.ERROR:
+        return <ErrorPage />;
+      case PageState.NOT_IN_GROUP:
+        return <NotInGroupPage />;
+      default:
+        return (
+          <>
+            <ExpensePage />
+            {page === PageState.MEMBERS && (
+              <CommonModal onClose={() => setPage(PageState.MAIN)}>
+                <MemberPage />
+              </CommonModal>
+            )}
+            {page === PageState.SUMMARY && (
+              <CommonModal onClose={() => setPage(PageState.MAIN)}>
+                <SummaryPage />
+              </CommonModal>
+            )}
+            {page === PageState.EXPENSE && (
+              <CommonModal onClose={() => setPage(PageState.MAIN)}>
+                <ExpenseModal />
+              </CommonModal>
+            )}
+          </>
+        );
+    }
   };
-  const [isShowMemberModal, setIsShowMemberModal] = useState(false);
-  const [isShowSummaryModal, setIsShowSummaryModal] = useState(false);
-  const [isShowCreateExpenseModal, setIsShowCreateExpenseModal] =
-    useState(false);
-  const [isShowExpenseModal, setIsShowExpenseModal] = useState(false);
   return (
     <div className="bg-stone-100 flex flex-col h-screen w-screen">
-      {renderNavbar()}
-      {renderContent()}
+      <Navbar />
+      {renderPage()}
     </div>
   );
 };

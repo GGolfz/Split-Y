@@ -1,20 +1,25 @@
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import CommonButton from "../components/CommonButton";
 import { Expense } from "../model/ExpenseResponse";
 import ExpenseItem from "../components/ExpenseItem";
-import { LineProfile } from "../model/LineProfile";
+import { expenseState } from "../store/expensesState";
+import { userState } from "../store/userState";
+import { selectedExpenseState } from "../store/selectedExpenseState";
+import { PageState, pageState } from "../store/pageState";
+import { Nullable } from "../type/Nullable";
 
-interface ExpensePageProp extends PageProp {
-  currentUser: LineProfile;
-  expenses: Array<Expense>;
-  onCreateExpense: () => void;
-  onUpdateExpense: (expenseId: string) => void;
-}
-const ExpensePage = ({
-  currentUser,
-  expenses,
-  onCreateExpense,
-  onUpdateExpense,
-}: ExpensePageProp) => {
+const ExpensePage = () => {
+  const expenses = useRecoilValue(expenseState);
+  const currentUser = useRecoilValue(userState);
+  const setSelectedExpense = useSetRecoilState(selectedExpenseState);
+  const setPage = useSetRecoilState(pageState);
+  const handleExpenseAction = (expense: Nullable<Expense>) => {
+    setSelectedExpense(expense);
+    setPage(PageState.EXPENSE);
+  };
+  if (currentUser === null) {
+    return <></>;
+  }
   return (
     <>
       <div className="flex flex-col flex-auto">
@@ -28,14 +33,17 @@ const ExpensePage = ({
               <ExpenseItem
                 expense={expense}
                 currentUser={currentUser}
-                onClick={() => onUpdateExpense(expense.id)}
+                onClick={() => handleExpenseAction(expense)}
               />
             ))}
           </>
         )}
       </div>
       <div className="py-6 flex justify-center">
-        <CommonButton text="Add an expense" onClick={onCreateExpense} />
+        <CommonButton
+          text="Add an expense"
+          onClick={() => handleExpenseAction(null)}
+        />
       </div>
     </>
   );
