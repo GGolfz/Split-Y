@@ -25,9 +25,12 @@ const app = new Elysia()
     },
   })
   .use(cors())
+  .get("/",() => Bun.file("public/index.html"))
+  .get("/:groupId", () => Bun.file("public/index.html"))
   .use(staticPlugin(
     {
-      prefix: "/"
+      prefix: "/",
+      alwaysStatic: true
     }
   ))
   .listen(PORT);

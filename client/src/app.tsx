@@ -33,7 +33,9 @@ const App = () => {
       setCurrentUser(profile);
       setAccessToken(liffAccessToken);
     } else {
-      liff.login();
+      liff.login({
+        redirectUri: `${window.location.hostname}/${group.groupId}`
+      });
     }
   };
 
@@ -48,9 +50,8 @@ const App = () => {
     if (accessToken !== null) {
       fetchGroupState(accessToken, group, setGroup, setPage);
       fetchExpenses(accessToken, group, setExpenses);
-      console.log(import.meta.env)
       const webSocket = new WebSocket(
-        `${import.meta.env.VITE_WS_BASE_URL}/ws/${group.groupId}`
+        `wss://${window.location.hostname}/ws/${group.groupId}`
       );
       webSocket.onmessage = (event: MessageEvent) => {
         if (event.data === "members") {
