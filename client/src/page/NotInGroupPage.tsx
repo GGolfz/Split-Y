@@ -5,8 +5,10 @@ import { useRecoilValue, useSetRecoilState, useRecoilState } from "recoil";
 import { PageState, pageState } from "../store/pageState";
 import { accessTokenState } from "../store/accessTokenState";
 import { fetchGroupState, groupState } from "../store/groupState";
+import { expenseState, fetchExpenses } from "../store/expensesState";
 const NotInGroupPage = () => {
   const setPage = useSetRecoilState(pageState);
+  const setExpense = useSetRecoilState(expenseState);
   const accessToken = useRecoilValue(accessTokenState);
   const [group, setGroup] = useRecoilState(groupState);
   const [isJoinButtonLoading, setIsJoinButtonLoading] =
@@ -35,6 +37,7 @@ const NotInGroupPage = () => {
                 if (response.isSuccess) {
                   setIsJoinButtonLoading(false);
                   fetchGroupState(accessToken, group, setGroup, setPage);
+                  fetchExpenses(accessToken, group, setExpense);
                   setPage(PageState.MAIN);
                 }
               } catch (exception) {
