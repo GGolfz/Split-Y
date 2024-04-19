@@ -30,14 +30,17 @@ abstract class WebHookService {
     event: Event
   ): Promise<void> {
     if (event.message.type === "text" && event.message.text.startsWith("!")) {
-      const command = event.message.text.split("!")[1];
+      const data = event.message.text.split("!")[1]?.split(" ") ?? [];
+      if (data.length === 0) return;
+      const command = data[0];
       switch (command) {
         case "new":
           this.createNewGroup(
             prismaClient,
             lineApiService,
             event.source.groupId,
-            event.replyToken
+            event.replyToken,
+            data[1] ?? "Unnamed Group"
           );
           break;
         case "list":
@@ -55,18 +58,20 @@ abstract class WebHookService {
     prismaClient: PrismaClient,
     lineApiService: LineApiService,
     groupId: string,
-    replyToken: string
+    replyToken: string,
+    groupName: string
   ): Promise<void> {
     const LINE_LIFF_URL = process.env.LINE_LIFF_URL;
     const group = await prismaClient.group.create({
       data: {
         lineGroupId: groupId,
+        name: groupName,
       },
     });
     await lineApiService.sendMessage(
       {
         type: "text",
-        text: `${LINE_LIFF_URL}/${group.groupId}`,
+        text: `${groupName}: ${LINE_LIFF_URL}/${group.groupId}`,
       },
       replyToken
     );
@@ -91,7 +96,9 @@ abstract class WebHookService {
         text: `Group List:\n${groupList
           .map(
             (group) =>
-              `${group.createdAt.toDateString()}: ${LINE_LIFF_URL}/${
+              `${
+                group.name
+              } (${group.createdAt.toDateString()}): ${LINE_LIFF_URL}/${
                 group.groupId
               }`
           )

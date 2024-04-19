@@ -30,6 +30,7 @@ model Expense {
 
 model Group {
   groupId     String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
   lineGroupId String
   members     String[]
   Expense     Expense[]
