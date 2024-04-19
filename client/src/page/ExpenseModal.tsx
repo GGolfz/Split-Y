@@ -13,6 +13,7 @@ import { PageState, pageState } from "../store/pageState";
 import { expenseState, fetchExpenses } from "../store/expensesState";
 import { webSocketState } from "../store/webSocketState";
 import { formatAmount } from "../utils/format";
+import { fetchSummary, summaryState } from "../store/summaryState";
 
 const ExpenseModal = () => {
   const [selectedExpense, setSelectedExpense] =
@@ -21,7 +22,8 @@ const ExpenseModal = () => {
   const accessToken = useRecoilValue(accessTokenState);
   const setPage = useSetRecoilState(pageState);
   const setExpenses = useSetRecoilState(expenseState);
-  const webSocket = useRecoilValue(webSocketState)
+  const setSummary = useSetRecoilState(summaryState);
+  const webSocket = useRecoilValue(webSocketState);
   const [formData, setFormData] = useState<{
     name: string;
     amount: string;
@@ -32,7 +34,8 @@ const ExpenseModal = () => {
     amount: selectedExpense?.amount.toFixed(2) ?? "",
     payerId: selectedExpense?.payer.userId ?? "",
     debtorIds:
-      selectedExpense?.debtors.map((d) => d.profile.userId) ?? group.members.map(m=>m.userId),
+      selectedExpense?.debtors.map((d) => d.profile.userId) ??
+      group.members.map((m) => m.userId),
   });
   const isFormValid =
     formData.name.length !== 0 &&
@@ -44,7 +47,8 @@ const ExpenseModal = () => {
     setSelectedExpense(null);
     setPage(PageState.MAIN);
     fetchExpenses(accessToken, group, setExpenses);
-    webSocket?.send('expenses')
+    fetchSummary(accessToken, group, setSummary);
+    webSocket?.send("expenses");
   };
   const handleCreateExpense = async () => {
     if (isFormValid && accessToken != null) {
@@ -164,7 +168,11 @@ const ExpenseModal = () => {
         valueList={group.members}
       />
       <MultipleSelect
-        name={`Split equally to ${formData.debtorIds.length} people (${formatAmount(parseFloat(formData.amount) / formData.debtorIds.length)})`}
+        name={`Split equally to ${
+          formData.debtorIds.length
+        } people (${formatAmount(
+          parseFloat(formData.amount) / formData.debtorIds.length
+        )})`}
         values={formData.debtorIds}
         onChange={(debtorIds) => {
           setFormData((formData) => ({

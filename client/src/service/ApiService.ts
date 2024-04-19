@@ -6,7 +6,7 @@ import { SummaryResponse } from "../model/SummaryResponse";
 import { ExpenseRequest } from "../model/ExpenseRequest";
 
 export const ApiService = {
-  BASE_URL: `https://split-y-nihhkze4lq-as.a.run.app/api/group`,
+  BASE_URL: `/api/group`,
   getHeader: (accessToken: string): AxiosRequestConfig => {
     return {
       headers: {

@@ -15,12 +15,14 @@ import MemberPage from "./page/MemberPage";
 import SummaryPage from "./page/SummaryPage";
 import ExpenseModal from "./page/ExpenseModal";
 import { webSocketState } from "./store/webSocketState";
+import { fetchSummary, summaryState } from "./store/summaryState";
 const App = () => {
   const [group, setGroup] = useRecoilState(groupState);
   const setCurrentUser = useSetRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const setPage = useSetRecoilState(pageState);
   const setExpenses = useSetRecoilState(expenseState);
+  const setSummary = useSetRecoilState(summaryState);
   const setWebSocket = useSetRecoilState(webSocketState);
   const isGroupIdValid = group.groupId && group.groupId.length > 0;
   const initializeLiff = async () => {
@@ -34,7 +36,7 @@ const App = () => {
       setAccessToken(liffAccessToken);
     } else {
       liff.login({
-        redirectUri: `https://${window.location.hostname}/${group.groupId}`
+        redirectUri: `https://${window.location.hostname}/${group.groupId}`,
       });
     }
   };
@@ -50,6 +52,7 @@ const App = () => {
     if (accessToken !== null) {
       fetchGroupState(accessToken, group, setGroup, setPage);
       fetchExpenses(accessToken, group, setExpenses);
+      fetchSummary(accessToken, group, setSummary);
       const webSocket = new WebSocket(
         `wss://${window.location.hostname}/ws/${group.groupId}`
       );
@@ -58,6 +61,7 @@ const App = () => {
           fetchGroupState(accessToken, group, setGroup, setPage);
         } else if (event.data === "expenses") {
           fetchExpenses(accessToken, group, setExpenses);
+          fetchSummary(accessToken, group, setSummary);
         }
       };
       setWebSocket((ws) => {
