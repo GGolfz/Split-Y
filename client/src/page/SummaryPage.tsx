@@ -37,7 +37,7 @@ const SummaryPage = () => {
     getSummary();
   }, []);
   return (
-    <div className="w-64 flex flex-col h-96 overflow-scroll gap-3">
+    <div className="w-screen flex flex-col h-screen overflow-scroll gap-3 p-8">
       <div className="sticky top-0 bg-white flex flex-col">
         <div className="text-center text-lg">Summary</div>
         <div className="text-md flex">
@@ -60,7 +60,7 @@ const SummaryPage = () => {
         </div>
         {(tab === Tab.Simplify ? simplifyTransactions : totalTransactions).map(
           (transaction) => (
-            <div className="flex text-xs gap-2 py-2 items-center">
+            <div className="flex text-sm gap-2 py-2 items-center">
               <MemberBox profile={transaction.payFrom} size={Size.Medium} />
               <div>paid {formatAmount(transaction.amount)} to </div>
               <MemberBox profile={transaction.payTo} size={Size.Medium} />

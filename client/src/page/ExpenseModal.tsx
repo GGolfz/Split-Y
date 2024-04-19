@@ -12,6 +12,7 @@ import { accessTokenState } from "../store/accessTokenState";
 import { PageState, pageState } from "../store/pageState";
 import { expenseState, fetchExpenses } from "../store/expensesState";
 import { webSocketState } from "../store/webSocketState";
+import { formatAmount } from "../utils/format";
 
 const ExpenseModal = () => {
   const [selectedExpense, setSelectedExpense] =
@@ -31,7 +32,7 @@ const ExpenseModal = () => {
     amount: selectedExpense?.amount.toFixed(2) ?? "",
     payerId: selectedExpense?.payer.userId ?? "",
     debtorIds:
-      selectedExpense?.debtors.map((d) => d.profile.userId) ?? Array<string>(),
+      selectedExpense?.debtors.map((d) => d.profile.userId) ?? group.members.map(m=>m.userId),
   });
   const isFormValid =
     formData.name.length !== 0 &&
@@ -130,7 +131,7 @@ const ExpenseModal = () => {
   };
 
   return (
-    <div className="w-64 flex flex-col max-h-screen gap-4">
+    <div className="w-screen flex flex-col h-screen gap-4 p-8">
       <div className="text-center text-lg sticky top-0 bg-white ">
         {selectedExpense === null ? "Create" : "Update"} an Expense
       </div>
@@ -163,7 +164,7 @@ const ExpenseModal = () => {
         valueList={group.members}
       />
       <MultipleSelect
-        name="Split equally to"
+        name={`Split equally to ${formData.debtorIds.length} people (${formatAmount(parseFloat(formData.amount) / formData.debtorIds.length)})`}
         values={formData.debtorIds}
         onChange={(debtorIds) => {
           setFormData((formData) => ({

@@ -17,7 +17,7 @@ const Navbar = () => {
       </div>
     );
   return (
-    <div className="flex justify-between w-screen p-4">
+    <div className="flex justify-between w-screen p-6">
       <div
         className="cursor-pointer"
         role="button"

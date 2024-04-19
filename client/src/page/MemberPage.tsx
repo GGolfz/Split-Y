@@ -5,7 +5,7 @@ import { groupState } from "../store/groupState";
 const MemberPage = () => {
   const group = useRecoilValue(groupState);
   return (
-    <div className="w-64 flex flex-col h-96 overflow-scroll gap-3">
+    <div className="w-screen flex flex-col h-screen overflow-scroll gap-3 p-8">
       <div className="text-center text-lg sticky top-0 bg-white">
         Group Members
       </div>

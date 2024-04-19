@@ -1,7 +1,6 @@
 const formatAmount = (amount: number): string => {
-    return `THB ${amount.toFixed(2)}`
-}
+  if (isNaN(amount)) return `THB 0.00`;
+  return `THB ${amount.toFixed(2)}`;
+};
 
-export {
-    formatAmount
-}
+export { formatAmount };
