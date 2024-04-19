@@ -40,7 +40,7 @@ abstract class WebHookService {
             lineApiService,
             event.source.groupId,
             event.replyToken,
-            data[1] ?? "Unnamed Group"
+            data.slice(1).join(" ") ?? "Unnamed Group"
           );
           break;
         case "list":
