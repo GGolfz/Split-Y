@@ -15,15 +15,15 @@ const MultipleSelect = ({
   valueList,
 }: MultipleSelectProp) => {
   return (
-    <div className="relative">
+    <div className="relative min-h-0 flex flex-col">
       <label
         for={name}
         className="block mb-2 text-sm font-medium text-gray-900"
       >
         {name}
       </label>
-      <ul className="py-2 text-sm text-gray-700 h-[45vh] overflow-scroll">
-        {valueList.map((v) => {
+      <ul className="py-2 text-sm text-gray-700 min-h-0 overflow-scroll">
+        {[...valueList,...valueList,...valueList].map((v) => {
           const isValueSelect = !!values.find((lv) => lv === v.userId);
           return (
             <li>

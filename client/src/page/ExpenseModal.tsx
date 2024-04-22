@@ -136,7 +136,7 @@ const ExpenseModal = () => {
 
   return (
     <div className="w-screen flex flex-col h-screen gap-4 p-8">
-      <div className="text-center text-lg sticky top-0 bg-white ">
+      <div className="text-center text-lg sticky top-0 bg-white">
         {selectedExpense === null ? "Create" : "Update"} an Expense
       </div>
       <TextField
