@@ -5,8 +5,13 @@ export const buildGroupListCarousel = (
   groupList: Array<Group>
 ): LineMessage => {
   return {
-    type: "carousel",
-    contents: [groupList.map(buildGroupBubble)],
+    type: "flex",
+    contents: [
+      {
+        type: "carousel",
+        contents: [groupList.map(buildGroupBubble)],
+      },
+    ],
   };
 };
 
