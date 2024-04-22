@@ -1,5 +1,6 @@
 export interface LineMessage {
   type: string;
+  altText?: string;
   text?: string;
-  contents?: Array<any>;
+  contents?: any;
 }

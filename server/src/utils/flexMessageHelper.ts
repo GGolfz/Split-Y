@@ -6,12 +6,11 @@ export const buildGroupListCarousel = (
 ): LineMessage => {
   return {
     type: "flex",
-    contents: [
-      {
-        type: "carousel",
-        contents: [groupList.map(buildGroupBubble)],
-      },
-    ],
+    altText: "list group",
+    contents: {
+      type: "carousel",
+      contents: groupList.map(buildGroupBubble),
+    },
   };
 };
 
