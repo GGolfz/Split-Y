@@ -52,6 +52,14 @@ abstract class WebHookService {
               event.source.groupId,
               event.replyToken
             );
+          else {
+            this.listJoinedGroup(
+              prismaClient,
+              lineApiService,
+              event.source.userId,
+              event.replyToken
+            );
+          }
           break;
       }
     }
@@ -87,6 +95,25 @@ abstract class WebHookService {
     const groupList = await prismaClient.group.findMany({
       where: {
         lineGroupId: groupId,
+        isActive: true,
+      },
+    });
+    await lineApiService.sendMessage(
+      buildGroupListCarousel(groupList),
+      replyToken
+    );
+  }
+  private static async listJoinedGroup(
+    prismaClient: PrismaClient,
+    lineApiService: LineApiService,
+    userId: string,
+    replyToken: string
+  ): Promise<void> {
+    const groupList = await prismaClient.group.findMany({
+      where: {
+        members: {
+          has: userId,
+        },
         isActive: true,
       },
     });
