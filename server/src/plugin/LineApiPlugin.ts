@@ -85,7 +85,9 @@ class LineApiService {
       return memberProfile;
     } catch (ex) {
       console.error("Failed to get group member profile due to: ", ex);
-      throw ex;
+      return {
+        userId: userId,
+      };
     }
   }
   async getMemberProfileFromLineFriend(userId: string): Promise<LineProfile> {
@@ -102,7 +104,9 @@ class LineApiService {
       return memberProfile;
     } catch (ex) {
       console.error("Failed to get group member profile due to: ", ex);
-      throw ex;
+      return {
+        userId: userId,
+      };
     }
   }
   async getGroupMembersProfile(
