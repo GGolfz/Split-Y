@@ -56,6 +56,7 @@ abstract class WebApiService {
         groupId
       );
       const memberProfiles = await lineApiService.getGroupMembersProfile(
+        prismaClient,
         group.members,
         group.lineGroupId
       );
@@ -87,6 +88,20 @@ abstract class WebApiService {
         },
         where: {
           groupId: groupId,
+        },
+      });
+      await prismaClient.user.upsert({
+        create: {
+          userId: userProfile.userId,
+          displayName: userProfile.displayName ?? userProfile.userId,
+          pictureUrl: userProfile.pictureUrl,
+        },
+        update: {
+          displayName: userProfile.displayName ?? userProfile.userId,
+          pictureUrl: userProfile.pictureUrl,
+        },
+        where: {
+          userId: userProfile.userId,
         },
       });
       return {
@@ -196,6 +211,7 @@ abstract class WebApiService {
       const memberProfilesMap = new Map<string, LineProfile>(
         (
           await lineApiService.getGroupMembersProfile(
+            prismaClient,
             group.members,
             group.lineGroupId
           )
@@ -237,6 +253,7 @@ abstract class WebApiService {
       const memberProfilesMap = new Map<string, LineProfile>(
         (
           await lineApiService.getGroupMembersProfile(
+            prismaClient,
             group.members,
             group.lineGroupId
           )
@@ -270,6 +287,7 @@ abstract class WebApiService {
       const memberProfilesMap = new Map<string, LineProfile>(
         (
           await lineApiService.getGroupMembersProfile(
+            prismaClient,
             group.members,
             group.lineGroupId
           )

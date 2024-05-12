@@ -37,3 +37,9 @@ model Group {
   createdAt   DateTime  @default(now())
   isActive    Boolean   @default(true)
 }
+
+model User {
+  userId      String @id @default(auto()) @map("_id") @db.ObjectId
+  displayName String
+  pictureUrl  String?
+}

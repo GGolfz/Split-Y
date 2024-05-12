@@ -3,6 +3,7 @@ import { LineMessage } from "../model/LineMessage";
 import axios from "axios";
 import { LineProfile } from "../model/LineProfile";
 import CacheService from "../services/CacheService";
+import { PrismaClient } from "@prisma/client";
 
 const BASE_URL = "https://api.line.me/v2";
 const CHANNEL_ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
@@ -47,25 +48,50 @@ class LineApiService {
     }
   }
   async getGroupMemberProfile(
+    prismaClient: PrismaClient,
     userId: string,
     groupId: string | null
   ): Promise<LineProfile> {
-    const cahceKey = `${userId}`;
-    const cahceData = this.memberProfileCacheService.get(cahceKey);
-    if (!!cahceData) {
-      return cahceData;
+    const cacheKey = `${userId}`;
+    const cacheData = this.memberProfileCacheService.get(cacheKey);
+    if (!!cacheData) {
+      return cacheData;
     }
+    let memberProfile = await this.getMemberProfileFromLine(userId, groupId);
+    if (!!memberProfile.displayName) {
+      memberProfile = await this.fetchLocalUserProfile(prismaClient, userId);
+    }
+    this.memberProfileCacheService.set(cacheKey, memberProfile);
+    return memberProfile;
+  }
+  async fetchLocalUserProfile(
+    prismaClient: PrismaClient,
+    userId: string
+  ): Promise<LineProfile> {
+    const localProfile = await prismaClient.user.findUnique({
+      where: {
+        userId: userId,
+      },
+    });
+    if (!!localProfile) {
+      return {
+        userId: localProfile.userId,
+        displayName: localProfile.displayName,
+        pictureUrl: localProfile.pictureUrl ?? undefined,
+      };
+    }
+    return {
+      userId: userId,
+    };
+  }
+  async getMemberProfileFromLine(
+    userId: string,
+    groupId: string | null
+  ): Promise<LineProfile> {
     if (groupId !== null) {
-      const memberProfile = await this.getMemberProfileFromLineGroup(
-        userId,
-        groupId
-      );
-      this.memberProfileCacheService.set(cahceKey, memberProfile);
-      return memberProfile;
+      return await this.getMemberProfileFromLineGroup(userId, groupId);
     } else {
-      const memberProfile = await this.getMemberProfileFromLineFriend(userId);
-      this.memberProfileCacheService.set(cahceKey, memberProfile);
-      return memberProfile;
+      return await this.getMemberProfileFromLineFriend(userId);
     }
   }
   async getMemberProfileFromLineGroup(
@@ -110,11 +136,14 @@ class LineApiService {
     }
   }
   async getGroupMembersProfile(
+    prismaClient: PrismaClient,
     userIds: Array<string>,
     groupId: string | null
   ): Promise<Array<LineProfile>> {
     return Promise.all(
-      userIds.map((userId) => this.getGroupMemberProfile(userId, groupId))
+      userIds.map((userId) =>
+        this.getGroupMemberProfile(prismaClient, userId, groupId)
+      )
     );
   }
 }
