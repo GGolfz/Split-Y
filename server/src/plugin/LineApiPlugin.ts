@@ -48,14 +48,30 @@ class LineApiService {
   }
   async getGroupMemberProfile(
     userId: string,
-    groupId: string
+    groupId: string | null
   ): Promise<LineProfile> {
-    const cahceKey = `${groupId}-${userId}`
-    const cahceData = this.memberProfileCacheService.get(cahceKey
-    );
+    const cahceKey = `${userId}`;
+    const cahceData = this.memberProfileCacheService.get(cahceKey);
     if (!!cahceData) {
       return cahceData;
     }
+    if (groupId !== null) {
+      const memberProfile = await this.getMemberProfileFromLineGroup(
+        userId,
+        groupId
+      );
+      this.memberProfileCacheService.set(cahceKey, memberProfile);
+      return memberProfile;
+    } else {
+      const memberProfile = await this.getMemberProfileFromLineFriend(userId);
+      this.memberProfileCacheService.set(cahceKey, memberProfile);
+      return memberProfile;
+    }
+  }
+  async getMemberProfileFromLineGroup(
+    userId: string,
+    groupId: string
+  ): Promise<LineProfile> {
     try {
       const response = await axios.get<LineProfile>(
         `${BASE_URL}/bot/group/${groupId}/member/${userId}`,
@@ -65,8 +81,24 @@ class LineApiService {
           },
         }
       );
-      const memberProfile = response.data
-      this.memberProfileCacheService.set(cahceKey, memberProfile)
+      const memberProfile = response.data;
+      return memberProfile;
+    } catch (ex) {
+      console.error("Failed to get group member profile due to: ", ex);
+      throw ex;
+    }
+  }
+  async getMemberProfileFromLineFriend(userId: string): Promise<LineProfile> {
+    try {
+      const response = await axios.get<LineProfile>(
+        `${BASE_URL}/bot/profile/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+          },
+        }
+      );
+      const memberProfile = response.data;
       return memberProfile;
     } catch (ex) {
       console.error("Failed to get group member profile due to: ", ex);
@@ -75,7 +107,7 @@ class LineApiService {
   }
   async getGroupMembersProfile(
     userIds: Array<string>,
-    groupId: string
+    groupId: string | null
   ): Promise<Array<LineProfile>> {
     return Promise.all(
       userIds.map((userId) => this.getGroupMemberProfile(userId, groupId))
