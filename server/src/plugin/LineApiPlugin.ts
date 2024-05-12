@@ -54,13 +54,15 @@ class LineApiService {
   ): Promise<LineProfile> {
     const cacheKey = `${userId}`;
     const cacheData = this.memberProfileCacheService.get(cacheKey);
-    if (!!cacheData) {
+    if (!!cacheData && !!cacheData.displayName) {
       return cacheData;
     }
     let memberProfile = await this.getMemberProfileFromLine(userId, groupId);
-    if (!!memberProfile.displayName) {
+    if (!memberProfile.displayName || memberProfile.displayName === "") {
+      console.log('fetch local')
       memberProfile = await this.fetchLocalUserProfile(prismaClient, userId);
     }
+    console.log('reach here', memberProfile)
     this.memberProfileCacheService.set(cacheKey, memberProfile);
     return memberProfile;
   }
