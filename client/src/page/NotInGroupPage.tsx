@@ -6,10 +6,12 @@ import { PageState, pageState } from "../store/pageState";
 import { accessTokenState } from "../store/accessTokenState";
 import { fetchGroupState, groupState } from "../store/groupState";
 import { expenseState, fetchExpenses } from "../store/expensesState";
+import { webSocketState } from "../store/webSocketState";
 const NotInGroupPage = () => {
   const setPage = useSetRecoilState(pageState);
   const setExpense = useSetRecoilState(expenseState);
   const accessToken = useRecoilValue(accessTokenState);
+  const webSocket = useRecoilValue(webSocketState);
   const [group, setGroup] = useRecoilState(groupState);
   const [isJoinButtonLoading, setIsJoinButtonLoading] =
     useState<boolean>(false);
@@ -39,6 +41,7 @@ const NotInGroupPage = () => {
                   fetchGroupState(accessToken, group, setGroup, setPage);
                   fetchExpenses(accessToken, group, setExpense);
                   setPage(PageState.MAIN);
+                  webSocket?.send("members");
                 }
               } catch (exception) {
                 console.error(exception);
