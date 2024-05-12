@@ -27,7 +27,7 @@ export interface DeliveryContext {
 export interface Source {
 	type: string
 	userId: string
-    groupId: string
+    groupId?: string
 }
 
 export const LineMessageEventType = t.Object({
@@ -45,7 +45,7 @@ export const LineMessageEventType = t.Object({
 		source: t.Object({
 		  type: t.String(),
 		  userId: t.String(),
-		  groupId: t.String(),
+		  groupId: t.Optional(t.String()),
 		}),
 		replyToken: t.String()
 	  })

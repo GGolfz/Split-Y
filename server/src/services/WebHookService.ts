@@ -39,18 +39,19 @@ abstract class WebHookService {
           this.createNewGroup(
             prismaClient,
             lineApiService,
-            event.source.groupId,
+            event.source.groupId ?? null,
             event.replyToken,
             data.slice(1).join(" ") ?? "Unnamed Group"
           );
           break;
         case "list":
-          this.listGroups(
-            prismaClient,
-            lineApiService,
-            event.source.groupId,
-            event.replyToken
-          );
+          if (!!event.source.groupId)
+            this.listGroups(
+              prismaClient,
+              lineApiService,
+              event.source.groupId,
+              event.replyToken
+            );
           break;
       }
     }
@@ -58,7 +59,7 @@ abstract class WebHookService {
   private static async createNewGroup(
     prismaClient: PrismaClient,
     lineApiService: LineApiService,
-    groupId: string,
+    groupId: string | null,
     replyToken: string,
     groupName: string
   ): Promise<void> {
@@ -83,8 +84,6 @@ abstract class WebHookService {
     groupId: string,
     replyToken: string
   ): Promise<void> {
-    const LINE_LIFF_URL = process.env.LINE_LIFF_URL;
-
     const groupList = await prismaClient.group.findMany({
       where: {
         lineGroupId: groupId,
