@@ -23,7 +23,7 @@ const MultipleSelect = ({
         {name}
       </label>
       <ul className="py-2 text-sm text-gray-700 min-h-0 overflow-scroll">
-        {[...valueList,...valueList,...valueList].map((v) => {
+        {valueList.map((v) => {
           const isValueSelect = !!values.find((lv) => lv === v.userId);
           return (
             <li>
