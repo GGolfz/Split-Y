@@ -39,7 +39,8 @@ model Group {
 }
 
 model User {
-  userId      String @id
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String 
   displayName String
   pictureUrl  String?
 }
