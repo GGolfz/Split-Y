@@ -68,7 +68,7 @@ class LineApiService {
     prismaClient: PrismaClient,
     userId: string
   ): Promise<LineProfile> {
-    const localProfile = await prismaClient.user.findUnique({
+    const localProfile = await prismaClient.user.findFirst({
       where: {
         userId: userId,
       },
