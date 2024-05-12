@@ -97,6 +97,10 @@ abstract class WebHookService {
         lineGroupId: groupId,
         isActive: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 5,
     });
     await lineApiService.sendMessage(
       buildGroupListCarousel(groupList),
@@ -116,6 +120,10 @@ abstract class WebHookService {
         },
         isActive: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 5,
     });
     await lineApiService.sendMessage(
       buildGroupListCarousel(groupList),
