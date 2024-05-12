@@ -90,20 +90,30 @@ abstract class WebApiService {
           groupId: groupId,
         },
       });
-      await prismaClient.user.upsert({
-        create: {
-          userId: userProfile.userId,
-          displayName: userProfile.displayName ?? userProfile.userId,
-          pictureUrl: userProfile.pictureUrl,
-        },
-        update: {
-          displayName: userProfile.displayName ?? userProfile.userId,
-          pictureUrl: userProfile.pictureUrl,
-        },
+      const userExist = await prismaClient.user.findFirst({
         where: {
-          userId: userProfile.userId,
-        },
-      });
+          userId: userProfile.userId
+        }
+      })
+      if(userExist) {
+        await prismaClient.user.update({
+          data: {
+            displayName: userProfile.displayName ?? userProfile.userId,
+            pictureUrl: userProfile.pictureUrl,
+          },
+          where: {
+            userId: userProfile.userId
+          }
+        })
+      } else {
+        await prismaClient.user.create({
+          data: {
+            userId: userProfile.userId,
+            displayName: userProfile.displayName ?? userProfile.userId,
+            pictureUrl: userProfile.pictureUrl,
+          }
+        })
+      }
       return {
         isSuccess: true,
       };
