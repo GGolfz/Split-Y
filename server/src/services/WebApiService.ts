@@ -102,7 +102,7 @@ abstract class WebApiService {
             pictureUrl: userProfile.pictureUrl,
           },
           where: {
-            userId: userProfile.userId
+            id: userExist.id
           }
         })
       } else {
