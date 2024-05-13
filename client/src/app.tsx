@@ -36,12 +36,11 @@ const App = () => {
       const groupData = await ApiService.getGroupInformation(group.groupId);
       if (groupData.isSuccess && groupData.data) {
         const flexMessage = buildFlexMessage(groupData.data);
-        console.log(flexMessage);
         await liff.shareTargetPicker([
           {
             type: "flex",
             altText: `กลุ่ม ${groupData.data.name}`,
-            contents: [flexMessage] as any,
+            contents: flexMessage as any,
           },
         ]);
         liff.closeWindow();

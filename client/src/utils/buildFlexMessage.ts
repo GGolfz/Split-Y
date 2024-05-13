@@ -57,7 +57,7 @@ export const buildFlexMessage = (group: GroupInfoResponse) => {
           action: {
             type: "uri",
             label: "Open",
-            uri: `${window.location.hostname}/${group.groupId}`,
+            uri: `https://${window.location.hostname}/${group.groupId}`,
           },
         },
         {
@@ -67,7 +67,7 @@ export const buildFlexMessage = (group: GroupInfoResponse) => {
           action: {
             type: "uri",
             label: "Share",
-            uri: `${window.location.hostname}/${group.groupId}/share`,
+            uri: `https://${window.location.hostname}/${group.groupId}/share`,
           },
         },
       ],

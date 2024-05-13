@@ -53,7 +53,7 @@ abstract class WebApiService {
         isSuccess: true,
         data: {
           groupId: group.groupId,
-          groupName: group.name,
+          name: group.name,
           createdAt: group.createdAt.toDateString(),
         },
       };
