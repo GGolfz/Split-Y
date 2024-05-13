@@ -1,6 +1,7 @@
 import GroupInfoResponse from "../model/GroupInfoResponse";
 
 export const buildFlexMessage = (group: GroupInfoResponse) => {
+  const LIFF_BASE_URL = "https://liff.line.me/2004547506-w5WkPoXz";
   return {
     type: "bubble",
     body: {
@@ -57,7 +58,7 @@ export const buildFlexMessage = (group: GroupInfoResponse) => {
           action: {
             type: "uri",
             label: "Open",
-            uri: `https://${window.location.hostname}/${group.groupId}`,
+            uri: `${LIFF_BASE_URL}/${group.groupId}`,
           },
         },
         {
@@ -67,7 +68,7 @@ export const buildFlexMessage = (group: GroupInfoResponse) => {
           action: {
             type: "uri",
             label: "Share",
-            uri: `https://${window.location.hostname}/${group.groupId}/share`,
+            uri: `${LIFF_BASE_URL}/${group.groupId}/share`,
           },
         },
       ],
