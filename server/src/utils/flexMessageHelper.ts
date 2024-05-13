@@ -83,6 +83,16 @@ const buildGroupBubble = (group: Group) => {
             uri: `${LINE_LIFF_URL}/${group.groupId}`,
           },
         },
+        {
+          type: "button",
+          style: "secondary",
+          height: "sm",
+          action: {
+            type: "uri",
+            label: "Share",
+            uri: `${LINE_LIFF_URL}/${group.groupId}/share`,
+          },
+        },
       ],
       flex: 0,
     },
