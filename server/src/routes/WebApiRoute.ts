@@ -13,9 +13,8 @@ const WebApiRoute = new Elysia()
   .use(LineApiPlugin)
   .get(
     "/info/:groupId",
-    ({ prismaClient, params: { groupId } }) => {
-      WebApiService.getGroupInformation(prismaClient, groupId);
-    },
+    ({ prismaClient, params: { groupId } }) =>
+      WebApiService.getGroupInformation(prismaClient, groupId),
     {
       params: GroupIdParamType,
     }
