@@ -34,7 +34,7 @@ const App = () => {
     if (isShare) {
       const groupData = await ApiService.getGroupInformation(group.groupId);
       if (groupData.isSuccess && groupData.data) {
-        liff.shareTargetPicker([
+        await liff.shareTargetPicker([
           {
             type: "flex",
             altText: `กลุ่ม ${groupData}`,
@@ -113,6 +113,7 @@ const App = () => {
             },
           },
         ]);
+        liff.closeWindow();
       } else {
         setPage(PageState.ERROR);
       }
