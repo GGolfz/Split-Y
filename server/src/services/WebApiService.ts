@@ -13,6 +13,7 @@ import {
   getSimplifyTransactions,
   getTotalTransactions,
 } from "../utils/summary";
+import GroupInfoResponse from "../model/GroupInfoResponse";
 
 abstract class WebApiService {
   private static async getGroupFromDB(
@@ -41,6 +42,22 @@ abstract class WebApiService {
       throw new Error("User is not in the group");
     }
     return group;
+  }
+  static async getGroupInformation(
+    prismaClient: PrismaClient,
+    groupId: string
+  ): Promise<ApiResponse<GroupInfoResponse>> {
+    return withExceptionWrapper(async () => {
+      const group = await WebApiService.getGroupFromDB(prismaClient, groupId);
+      return {
+        isSuccess: true,
+        data: {
+          groupId: group.groupId,
+          groupName: group.name,
+          createdAt: group.createdAt.toDateString(),
+        },
+      };
+    }, "Failed to get group information");
   }
   static async getGroup(
     prismaClient: PrismaClient,
@@ -92,27 +109,27 @@ abstract class WebApiService {
       });
       const userExist = await prismaClient.user.findFirst({
         where: {
-          userId: userProfile.userId
-        }
-      })
-      if(userExist) {
+          userId: userProfile.userId,
+        },
+      });
+      if (userExist) {
         await prismaClient.user.update({
           data: {
             displayName: userProfile.displayName ?? userProfile.userId,
             pictureUrl: userProfile.pictureUrl,
           },
           where: {
-            id: userExist.id
-          }
-        })
+            id: userExist.id,
+          },
+        });
       } else {
         await prismaClient.user.create({
           data: {
             userId: userProfile.userId,
             displayName: userProfile.displayName ?? userProfile.userId,
             pictureUrl: userProfile.pictureUrl,
-          }
-        })
+          },
+        });
       }
       return {
         isSuccess: true,

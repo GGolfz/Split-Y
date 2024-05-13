@@ -11,6 +11,15 @@ import { ExpenseRequestType } from "../model/ExpenseRequest";
 const WebApiRoute = new Elysia()
   .use(PrismaPlugin)
   .use(LineApiPlugin)
+  .get(
+    "/info/:groupId",
+    ({ prismaClient, params: { groupId } }) => {
+      WebApiService.getGroupInformation(prismaClient, groupId);
+    },
+    {
+      params: GroupIdParamType,
+    }
+  )
   .group("/group/:groupId", (app) =>
     app.guard(
       {
@@ -102,21 +111,24 @@ const WebApiRoute = new Elysia()
                   body: ExpenseRequestType,
                 }
               )
-              .get("/summary", ({
-                prismaClient,
-                lineApiService,
-                accessToken,
-                params: { groupId },
-              }) =>
-                WebApiService.summaryExpenses(
+              .get(
+                "/summary",
+                ({
                   prismaClient,
                   lineApiService,
                   accessToken,
-                  groupId
-                ),
-              {
-                params: GroupIdParamType,
-              })
+                  params: { groupId },
+                }) =>
+                  WebApiService.summaryExpenses(
+                    prismaClient,
+                    lineApiService,
+                    accessToken,
+                    groupId
+                  ),
+                {
+                  params: GroupIdParamType,
+                }
+              )
               .group("/:expenseId", (expenseWithIdRoute) =>
                 expenseWithIdRoute
                   .get(

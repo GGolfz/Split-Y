@@ -30,9 +30,8 @@ const App = () => {
     await liff.init({
       liffId: "2004547506-w5WkPoXz",
     });
-    const urlSearchParam = new URLSearchParams(window.location.search);
-    const isShare = urlSearchParam?.get("share");
-    if (isShare === "true") {
+    const isShare = window.location.pathname.split("/").includes("share");
+    if (isShare) {
       const groupData = await ApiService.getGroupInformation(group.groupId);
       if (groupData.isSuccess && groupData.data) {
         liff.shareTargetPicker([
@@ -47,7 +46,7 @@ const App = () => {
                 contents: [
                   {
                     type: "text",
-                    text: groupData.data.groupName,
+                    text: groupData.data.name,
                     weight: "bold",
                     size: "xl",
                   },

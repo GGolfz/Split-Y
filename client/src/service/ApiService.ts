@@ -7,6 +7,7 @@ import { ExpenseRequest } from "../model/ExpenseRequest";
 import GroupInfoResponse from "../model/GroupInfoResponse";
 
 export const ApiService = {
+  API_BASE: `/api`,
   BASE_URL: `/api/group`,
   getHeader: (accessToken: string): AxiosRequestConfig => {
     return {
@@ -29,7 +30,7 @@ export const ApiService = {
     groupId: string
   ): Promise<ApiResponse<GroupInfoResponse>> => {
     const response = await axios.get<ApiResponse<GroupInfoResponse>>(
-      `${ApiService.BASE_URL}/${groupId}`
+      `${ApiService.API_BASE}/info/${groupId}`
     );
     return response.data;
   },
