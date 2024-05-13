@@ -6,11 +6,19 @@ export const buildGroupListCarousel = (
 ): LineMessage => {
   return {
     type: "flex",
-    altText: "list group",
+    altText: "กลุ่มทั้งหมด",
     contents: {
       type: "carousel",
       contents: groupList.map(buildGroupBubble),
     },
+  };
+};
+
+export const buildGroupResponse = (group: Group): LineMessage => {
+  return {
+    type: "flex",
+    altText: `กลุ่ม ${group.name} ได้ถูกสร้างขึ้น`,
+    contents: buildGroupBubble(group),
   };
 };
 

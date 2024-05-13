@@ -2,7 +2,7 @@ import { LineMessageEvent, Event } from "../model/WebhookEvent";
 import { PrismaClient } from "@prisma/client";
 import { LineApiService } from "../plugin/LineApiPlugin";
 import { BaseResponse } from "../model/BaseResponse";
-import { buildGroupListCarousel } from "../utils/flexMessageHelper";
+import { buildGroupListCarousel, buildGroupResponse } from "../utils/flexMessageHelper";
 abstract class WebHookService {
   static async handleLineWebHook(
     prismaClient: PrismaClient,
@@ -71,7 +71,6 @@ abstract class WebHookService {
     replyToken: string,
     groupName: string
   ): Promise<void> {
-    const LINE_LIFF_URL = process.env.LINE_LIFF_URL;
     const group = await prismaClient.group.create({
       data: {
         lineGroupId: groupId,
@@ -79,10 +78,7 @@ abstract class WebHookService {
       },
     });
     await lineApiService.sendMessage(
-      {
-        type: "text",
-        text: `${groupName}: ${LINE_LIFF_URL}/${group.groupId}`,
-      },
+      buildGroupResponse(group),
       replyToken
     );
   }
