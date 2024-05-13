@@ -16,6 +16,7 @@ import SummaryPage from "./page/SummaryPage";
 import ExpenseModal from "./page/ExpenseModal";
 import { webSocketState } from "./store/webSocketState";
 import { fetchSummary, summaryState } from "./store/summaryState";
+import { ApiService } from "./service/ApiService";
 const App = () => {
   const [group, setGroup] = useRecoilState(groupState);
   const setCurrentUser = useSetRecoilState(userState);
@@ -29,15 +30,104 @@ const App = () => {
     await liff.init({
       liffId: "2004547506-w5WkPoXz",
     });
-    if (liff.isLoggedIn()) {
-      const liffAccessToken = liff.getAccessToken();
-      const profile = await liff.getProfile();
-      setCurrentUser(profile);
-      setAccessToken(liffAccessToken);
+    const urlSearchParam = new URLSearchParams(window.location.search);
+    const isShare = urlSearchParam?.get("share");
+    if (isShare === "true") {
+      const groupData = await ApiService.getGroupInformation(group.groupId);
+      if (groupData.isSuccess && groupData.data) {
+        liff.shareTargetPicker([
+          {
+            type: "flex",
+            altText: `กลุ่ม ${groupData}`,
+            contents: {
+              type: "bubble",
+              body: {
+                type: "box",
+                layout: "vertical",
+                contents: [
+                  {
+                    type: "text",
+                    text: groupData.data.groupName,
+                    weight: "bold",
+                    size: "xl",
+                  },
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    margin: "lg",
+                    spacing: "sm",
+                    contents: [
+                      {
+                        type: "box",
+                        layout: "baseline",
+                        spacing: "sm",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "Created At",
+                            color: "#aaaaaa",
+                            size: "sm",
+                            flex: 1,
+                          },
+                          {
+                            type: "text",
+                            text: groupData.data.createdAt,
+                            wrap: true,
+                            color: "#666666",
+                            size: "sm",
+                            flex: 2,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              footer: {
+                type: "box",
+                layout: "vertical",
+                spacing: "sm",
+                contents: [
+                  {
+                    type: "button",
+                    style: "primary",
+                    height: "sm",
+                    action: {
+                      type: "uri",
+                      label: "Open",
+                      uri: `${window.location.hostname}/${groupData.data.groupId}`,
+                    },
+                  },
+                  {
+                    type: "button",
+                    style: "secondary",
+                    height: "sm",
+                    action: {
+                      type: "uri",
+                      label: "Share",
+                      uri: `${window.location.hostname}/${groupData.data.groupId}/share`,
+                    },
+                  },
+                ],
+                flex: 0,
+              },
+            },
+          },
+        ]);
+      } else {
+        setPage(PageState.ERROR);
+      }
     } else {
-      liff.login({
-        redirectUri: `https://${window.location.hostname}/${group.groupId}`,
-      });
+      if (liff.isLoggedIn()) {
+        const liffAccessToken = liff.getAccessToken();
+        const profile = await liff.getProfile();
+        setCurrentUser(profile);
+        setAccessToken(liffAccessToken);
+      } else {
+        liff.login({
+          redirectUri: `https://${window.location.hostname}/${group.groupId}`,
+        });
+      }
     }
   };
 

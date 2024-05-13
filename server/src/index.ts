@@ -27,6 +27,7 @@ const app = new Elysia()
   .use(cors())
   .get("/",() => Bun.file("public/index.html"))
   .get("/:groupId", () => Bun.file("public/index.html"))
+  .get("/:groupId/share", () => Bun.file("public/index.html"))
   .use(staticPlugin(
     {
       prefix: "/",

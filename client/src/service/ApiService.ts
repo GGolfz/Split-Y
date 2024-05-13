@@ -4,6 +4,7 @@ import { ApiResponse, BaseResponse } from "../model/BaseResponse";
 import { ExpenseResponse } from "../model/ExpenseResponse";
 import { SummaryResponse } from "../model/SummaryResponse";
 import { ExpenseRequest } from "../model/ExpenseRequest";
+import GroupInfoResponse from "../model/GroupInfoResponse";
 
 export const ApiService = {
   BASE_URL: `/api/group`,
@@ -21,6 +22,14 @@ export const ApiService = {
     const response = await axios.get<ApiResponse<GroupResponse>>(
       `${ApiService.BASE_URL}/${groupId}`,
       ApiService.getHeader(accessToken)
+    );
+    return response.data;
+  },
+  getGroupInformation: async (
+    groupId: string
+  ): Promise<ApiResponse<GroupInfoResponse>> => {
+    const response = await axios.get<ApiResponse<GroupInfoResponse>>(
+      `${ApiService.BASE_URL}/${groupId}`
     );
     return response.data;
   },
