@@ -37,7 +37,7 @@ const App = () => {
         await liff.shareTargetPicker([
           {
             type: "flex",
-            altText: `กลุ่ม ${groupData}`,
+            altText: `กลุ่ม ${groupData.data.name}`,
             contents: {
               type: "bubble",
               body: {
