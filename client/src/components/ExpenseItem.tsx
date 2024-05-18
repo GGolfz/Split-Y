@@ -47,7 +47,7 @@ const ExpenseItem = (props: Props) => {
   };
   return (
     <div className="flex space-between gap-2 shadow-md mx-6 my-2 p-4 rounded cursor-pointer" onClick={props.onClick}>
-      <div className="bg-neutral-800 p-2">
+      <div className="bg-neutral-800 p-2 h-min">
         <BillIcon />
       </div>
       <div className="flex-auto flex flex-col overflow-hidden">
