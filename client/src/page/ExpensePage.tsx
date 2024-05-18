@@ -22,7 +22,7 @@ const ExpensePage = () => {
   }
   return (
     <>
-      <div className="flex flex-col flex-auto">
+      <div className="flex flex-col flex-auto overflow-y-scroll">
         {expenses.length === 0 ? (
           <div className="flex flex-col flex-auto text-center justify-center">
             No expense in the group yet
