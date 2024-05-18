@@ -18,7 +18,7 @@ const SummaryPage = () => {
     <div className="w-screen flex flex-col h-screen overflow-scroll gap-3 p-8">
       <div className="sticky top-0 bg-white flex flex-col">
         <div className="text-center text-lg">Summary</div>
-        <div className="text-md flex">
+        <div className="text-md flex cursor-pointer">
           <div
             className={`flex-1 text-center ${
               tab === Tab.Simplify && "text-violet-500 text-semibold"
