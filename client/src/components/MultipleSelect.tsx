@@ -27,17 +27,15 @@ const MultipleSelect = ({
           const isValueSelect = !!values.find((lv) => lv === v.userId);
           return (
             <li>
-              <div className="flex gap-2 px-4 py-2">
-                <div
-                  className="cursor-pointer"
+              <div className="flex gap-2 px-4 py-2 cursor-pointer"
                   onClick={() => {
                     if (isValueSelect) {
                       onChange(values.filter((lv) => lv !== v.userId));
                     } else {
                       onChange([...values, v.userId]);
                     }
-                  }}
-                >
+                  }}>
+                <div>
                   {isValueSelect ? (
                     <CheckBoxCheckIcon />
                   ) : (
