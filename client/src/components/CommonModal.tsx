@@ -8,7 +8,7 @@ interface Prop {
 const CommonModal = ({ onClose, children }: Prop) => {
   return (
     <div className="z-50 w-screen h-screen absolute justify-center flex items-center">
-      <div className="z-50 bg-white rounded-sm relative"><div className="absolute top-8 left-7 z-50" onClick={onClose}><BackIcon/></div>{children}</div>
+      <div className="z-50 bg-white rounded-sm relative"><div className="cursor-pointer absolute top-8 left-7 z-50" onClick={onClose}><BackIcon/></div>{children}</div>
     </div>
   );
 };
