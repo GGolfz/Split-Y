@@ -41,7 +41,6 @@ const MultipleSelect = ({
 						<div className="text-md h-[24px]">Select All</div>
 					</div>
 				</li>
-				);
 				{valueList.map((v) => {
 					const isValueSelect = !!values.find((lv) => lv === v.userId)
 					return (
