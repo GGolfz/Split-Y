@@ -1,5 +1,5 @@
 const formatAmount = (amount: number): string => {
-  if (isNaN(amount)) return `THB 0.00`;
+  if (isNaN(amount) || !isFinite(amount)) return `THB 0.00`;
   return `THB ${amount.toFixed(2)}`;
 };
 
