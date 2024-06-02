@@ -36,7 +36,7 @@ const MultipleSelect = ({
 						}}
 					>
 						<div>
-							{isValueSelect ? <CheckBoxCheckIcon /> : <CheckBoxNotCheckIcon />}
+							{isSelectAll ? <CheckBoxCheckIcon /> : <CheckBoxNotCheckIcon />}
 						</div>
 						<div className="text-md h-[24px]">Select All</div>
 					</div>
